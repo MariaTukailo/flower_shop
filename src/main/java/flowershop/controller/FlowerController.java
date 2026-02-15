@@ -23,7 +23,7 @@ public class FlowerController {
   }
 
   @GetMapping
-  public List<FlowerDTO> getFlowersByColor(@RequestParam(required = false) String color) {
+  public List<FlowerDto> getFlowersByColor(@RequestParam(required = false) String color) {
     return flowerService.findFlowersByColor(color);
   }
 }
