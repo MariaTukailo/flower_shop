@@ -1,9 +1,14 @@
-package flower.shop.mapper;
+package flowershop.mapper;
 
-import flower.shop.dto.FlowerDto;
-import flower.shop.entity.Flower;
+import flowershop.dto.FlowerDto;
+import flowershop.entity.Flower;
+
 
 public class FlowerMapper {
+
+  private FlowerMapper() {
+
+  }
 
   public static FlowerDto toDto(Flower flower) {
 

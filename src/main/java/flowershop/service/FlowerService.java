@@ -1,9 +1,9 @@
-package flower.shop.service;
+package flowershop.service;
 
-import flower.shop.dto.FlowerDto;
-import flower.shop.entity.Flower;
-import flower.shop.mapper.FlowerMapper;
-import flower.shop.repository.FlowerRepository;
+import flowershop.dto.FlowerDto;
+import flowershop.entity.Flower;
+import flowershop.mapper.FlowerMapper;
+import flowershop.repository.FlowerRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package flower.shop.dto;
+package flowershop.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

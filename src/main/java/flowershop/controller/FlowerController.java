@@ -1,7 +1,7 @@
-package flower.shop.controller;
+package flowershop.controller;
 
-import flower.shop.dto.FlowerDto;
-import flower.shop.service.FlowerService;
+import flowershop.dto.FlowerDto;
+import flowershop.service.FlowerService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

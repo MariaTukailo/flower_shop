@@ -1,4 +1,4 @@
-package flower.shop.entity;
+package flowershop.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
