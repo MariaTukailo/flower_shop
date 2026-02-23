@@ -10,4 +10,4 @@ Spring Boot Flower Shop Project - это приложение для управ�
 4. Реализованы слои: Controller → Service → Repository.
 5. Реализовано DTO и mapper между Entity и API-ответом.
 
-Ссылка Sonar :  [![Quality Gatпшe Status](https://sonarcloud.io/api/project_badges/measure?project=MariaTukailo_flower_shop&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=MariaTukailo_flower_shop)
+Ссылка Sonar : https://sonarcloud.io/api/project_badges/measure?project=MariaTukailo_flower_shop&metric=alert_status
