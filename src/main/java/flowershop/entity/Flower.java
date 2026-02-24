@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Flower {
 
-  private int catalogNumber;
-  private String name;
-  private double price;
-  private String color;
-  private String country;
+    private int catalogNumber;
+    private String name;
+    private double price;
+    private String color;
+    private String country;
 
 }
