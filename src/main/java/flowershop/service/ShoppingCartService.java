@@ -24,7 +24,7 @@ public class ShoppingCartService {
         ShoppingCart cart = shoppingCartRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Корзина не найдена с id: " + id));
 
-        // Используем твой маппер для превращения сущности в DTO со списком букетов
+
         return flowershop.mapper.ShoppingCartMapper.toDto(cart);
     }
 
