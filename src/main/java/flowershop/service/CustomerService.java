@@ -1,12 +1,15 @@
 package flowershop.service;
 
+import flowershop.dto.CustomerDto;
 import flowershop.entity.Customer;
 import flowershop.entity.ShoppingCart;
+import flowershop.exception.TransactionDemoException;
+import flowershop.mapper.CustomerMapper;
 import flowershop.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import flowershop.exception.TransactionDemoException;
+
 import java.util.List;
 
 @Service
@@ -15,78 +18,82 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
 
+    private Customer findEntityById(Long id) {
+        return customerRepository.findById(id).orElse(null);
+    }
+
+    public List<CustomerDto> findAll() {
+        List<Customer> customers = customerRepository.findAll();
+        return customers.stream()
+                .map(CustomerMapper::toDto)
+                .toList();
+    }
+
+    public CustomerDto findById(Long id) {
+        Customer customer = findEntityById(id);
+        return CustomerMapper.toDto(customer);
+    }
+
     @Transactional
-    public void createCustomerWithCart(String name, String phone, boolean triggerError) {
-        Customer customer = new Customer();
-        customer.setName(name);
-        customer.setPhoneNumber(phone);
+    public CustomerDto createTransactional(CustomerDto dto) {
+
+        Customer customer = CustomerMapper.toEntity(dto);
+        customer = customerRepository.save(customer);
 
         ShoppingCart cart = new ShoppingCart();
+        cart.setCustomer(customer);
+        cart.setId(customer.getId());
 
         customer.setCart(cart);
 
-        customerRepository.save(customer);
-
-        if (triggerError) {
-            throw new TransactionDemoException("Специальный сбой для отката транзакции!");
-        }
+        return CustomerMapper.toDto(customerRepository.save(customer));
     }
 
-    public List<Customer> getAll() {
-        return customerRepository.findAll();
+    public CustomerDto createWithoutTransaction(CustomerDto dto) {
+        Customer customer = CustomerMapper.toEntity(dto);
+        customer = customerRepository.save(customer);
+
+        ShoppingCart cart = new ShoppingCart();
+        cart.setCustomer(customer);
+        cart.setId(customer.getId());
+
+        customer.setCart(cart);
+
+        throw new TransactionDemoException("Тест: Ошибка БЕЗ @Transactional.");
     }
 
-    public Customer findById(Long id) {
-        return customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+
+    @Transactional
+    public CustomerDto createWithTransaction(CustomerDto dto) {
+        Customer customer = CustomerMapper.toEntity(dto);
+        customer = customerRepository.save(customer);
+
+        ShoppingCart cart = new ShoppingCart();
+        cart.setCustomer(customer);
+        cart.setId(customer.getId());
+
+        customer.setCart(cart);
+
+
+
+        throw new TransactionDemoException("Тест: Ошибка С @Transactional.");
     }
 
     @Transactional
-    public Customer save(Customer customer) {
-        return customerRepository.save(customer);
+    public CustomerDto update(Long id, CustomerDto dto) {
+        Customer customer = findEntityById(id);
+
+        customer.setName(dto.getName());
+        customer.setPhoneNumber(dto.getPhoneNumber());
+
+        return CustomerMapper.toDto(customerRepository.save(customer));
     }
 
     @Transactional
-    public Customer update(Long id, Customer details) {
-        Customer customer = findById(id);
-        customer.setName(details.getName());
-        customer.setPhoneNumber(details.getPhoneNumber());
-        return customerRepository.save(customer);
-    }
-
-    @Transactional
-    public void deleteCustomer(Long id) {
-        Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        customer.setCart(null);
-        customerRepository.saveAndFlush(customer);
+    public void delete(Long id) {
+        Customer customer = findEntityById(id);
 
         customerRepository.delete(customer);
-    }
 
-    @Transactional
-    public void createWithTransaction(String name, String phone, boolean error) {
-        saveLogic(name, phone, error);
-    }
-
-
-    public void createWithoutTransaction(String name, String phone, boolean error) {
-        saveLogic(name, phone, error);
-    }
-
-    private void saveLogic(String name, String phone, boolean error) {
-        Customer customer = new Customer();
-        customer.setName(name);
-        customer.setPhoneNumber(phone);
-
-        ShoppingCart cart = new ShoppingCart();
-        customer.setCart(cart);
-
-        customerRepository.save(customer); // Сохраняем в базу
-
-        if (error) {
-            throw new TransactionDemoException("Ошибка после сохранения.");
-        }
     }
 }

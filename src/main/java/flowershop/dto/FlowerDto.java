@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 public class FlowerDto {
 
     private Long id;
-    private int catalogNumber;
     private String name;
+    private boolean active;
     private double price;
     private String color;
 

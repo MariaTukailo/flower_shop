@@ -1,21 +1,20 @@
 package flowershop.entity;
 
-import java.util.List;
-
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.JoinTable;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.CascadeType;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.util.ArrayList;
+import java.util.List;
 
 @AllArgsConstructor
 @Data
@@ -27,20 +26,26 @@ public class Bouquet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private int catalogNumber;
+    private boolean active;
     private String name;
+    private double price;
     private boolean wrappingPaper;
     private boolean ribbon;
+    private int countFlowers;
 
-
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "bouquet_flowers",
             joinColumns = @JoinColumn(name = "bouquet_id"),
             inverseJoinColumns = @JoinColumn(name = "flower_id")
     )
+
     private List<Flower> flowers = new ArrayList<>();
 
+    @ManyToMany(mappedBy = "bouquets", fetch = FetchType.LAZY)
+    private List<ShoppingCart> shoppingCarts = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "bouquets", fetch = FetchType.LAZY)
+    private List<Order> orders = new ArrayList<>();
 
 }

@@ -1,10 +1,8 @@
 package flowershop.service;
 
 import flowershop.entity.Bouquet;
-import flowershop.entity.Customer;
 import flowershop.entity.ShoppingCart;
-import flowershop.exception.TransactionDemoException;
-import flowershop.repository.CustomerRepository;
+import flowershop.repository.BouquetRepository;
 import flowershop.repository.ShoppingCartRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,53 +13,54 @@ import org.springframework.transaction.annotation.Transactional;
 public class ShoppingCartService {
 
     private final ShoppingCartRepository shoppingCartRepository;
-    private final CustomerRepository customerRepository; // Добавили репозиторий клиента
-    private final BouquetService bouquetService;
+    private final BouquetRepository bouquetRepository;
 
-    // Метод теперь ищет клиента, а потом берет его корзину
-    public ShoppingCart getByCustomerId(Long customerId) {
-        Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new TransactionDemoException("Клиент с id " + customerId + " не найден"));
+    private ShoppingCart findEntityById(Long id) {
+        return shoppingCartRepository.findById(id).orElse(null);
+    }
 
-        ShoppingCart cart = customer.getCart();
-        if (cart == null) {
-            throw new TransactionDemoException("Корзина для клиента не инициализирована");
+    @Transactional(readOnly = true)
+    public flowershop.dto.ShoppingCartsDto getCartDto(Long id) {
+        ShoppingCart cart = shoppingCartRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Корзина не найдена с id: " + id));
+
+        // Используем твой маппер для превращения сущности в DTO со списком букетов
+        return flowershop.mapper.ShoppingCartMapper.toDto(cart);
+    }
+
+
+
+    @Transactional
+    public void addBouquet(Long cartId, Long bouquetId) {
+        ShoppingCart cart = findEntityById(cartId);
+        Bouquet bouquet = bouquetRepository.findById(bouquetId).orElse(null);
+
+        if (cart != null && bouquet != null) {
+
+            cart.getBouquets().add(bouquet);
+            shoppingCartRepository.save(cart);
         }
-        return cart;
     }
 
+
     @Transactional
-    public ShoppingCart addBouquet(Long customerId, Long bouquetId) {
-        ShoppingCart cart = getByCustomerId(customerId);
-        Bouquet bouquet = bouquetService.getById(bouquetId);
+    public void removeBouquet(Long cartId, Long bouquetId) {
+        ShoppingCart cart = findEntityById(cartId);
+        Bouquet bouquet = bouquetRepository.findById(bouquetId).orElse(null);
 
-        cart.getBouquets().add(bouquet);
-
-
-
-
-        return shoppingCartRepository.save(cart);
+        if (cart != null && bouquet != null) {
+            cart.getBouquets().remove(bouquet);
+            shoppingCartRepository.save(cart);
+        }
     }
 
-    @Transactional
-    public ShoppingCart removeBouquet(Long customerId, Long bouquetId) {
-        ShoppingCart cart = getByCustomerId(customerId);
-        Bouquet bouquet = bouquetService.getById(bouquetId);
-
-        cart.getBouquets().remove(bouquet);
-
-
-
-        return shoppingCartRepository.save(cart);
-    }
 
     @Transactional
-    public void clear(Long customerId) {
-        ShoppingCart cart = getByCustomerId(customerId);
-
-        cart.getBouquets().clear();
-
-
-        shoppingCartRepository.save(cart);
+    public void clearCart(Long cartId) {
+        ShoppingCart cart = findEntityById(cartId);
+        if (cart != null) {
+            cart.getBouquets().clear();
+            shoppingCartRepository.save(cart);
+        }
     }
 }

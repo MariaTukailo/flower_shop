@@ -1,12 +1,17 @@
 package flowershop.service;
 
+import flowershop.dto.BouquetDto;
+import flowershop.dto.FlowerDto;
 import flowershop.entity.Bouquet;
-import flowershop.exception.TransactionDemoException;
+import flowershop.entity.Flower;
+import flowershop.mapper.BouquetMapper;
 import flowershop.repository.BouquetRepository;
+import flowershop.repository.FlowerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -14,50 +19,124 @@ import java.util.List;
 public class BouquetService {
 
     private final BouquetRepository bouquetRepository;
+    private final FlowerRepository flowerRepository;
 
-    public List<Bouquet> getAllSimple() {
-        return bouquetRepository.findAll();
+    private Bouquet findEntityById(Long id) {
+        return bouquetRepository.findById(id).orElse(null);
     }
 
-    public List<Bouquet> getAllWithFlowers() {
-        return bouquetRepository.findAllWithFlowers();
+    public List<BouquetDto> findAll() {
+        List<Bouquet> bouquets = bouquetRepository.findAll();
+
+        return bouquets.stream()
+                .map(BouquetMapper::toDto)
+                .toList();
     }
 
-    public Bouquet getById(Long id) {
-        return bouquetRepository.findById(id)
-                .orElseThrow(() -> new TransactionDemoException("Букет с id " + id + " не найден"));
+    public List<BouquetDto> findAllActive() {
+        return bouquetRepository.findAll().stream()
+                .filter(Bouquet::isActive)
+                .map(BouquetMapper::toDto)
+                .toList();
     }
 
-    @Transactional
-    public Bouquet save(Bouquet bouquet) {
-
-
-        return bouquetRepository.save(bouquet);
-    }
-
-    @Transactional
-    public Bouquet update(Long id, Bouquet details) {
-        Bouquet bouquet = getById(id);
-
-        bouquet.setCatalogNumber(details.getCatalogNumber());
-        bouquet.setName(details.getName());
-        bouquet.setWrappingPaper(details.isWrappingPaper());
-        bouquet.setRibbon(details.isRibbon());
-
-        if (details.getFlowers() != null) {
-
-            bouquet.setFlowers(details.getFlowers());
+    public BouquetDto findById(Long id) {
+        Bouquet bouquet = bouquetRepository.findById(id).orElse(null);
+        if (bouquet == null) {
+            return null;
         }
 
+        return BouquetMapper.toDto(bouquet);
+    }
 
-
-        return bouquetRepository.save(bouquet);
+    public List<BouquetDto> findAllOptimized() {
+        return bouquetRepository.findAllWithFlowers().stream()
+                .map(BouquetMapper::toDto)
+                .toList();
     }
 
     @Transactional
-    public void delete(Long id) {
-        Bouquet bouquet = getById(id);
+    public BouquetDto create(BouquetDto dto) {
 
-        bouquetRepository.delete(bouquet);
+        List<Long> flowerIds = dto.getFlowers().stream()
+                .map(FlowerDto::getId)
+                .toList();
+
+
+        List<Flower> allRequestedFlowers = flowerRepository.findAllById(flowerIds);
+        List<Flower> activeFlowers = new ArrayList<>();
+        double price = 0;
+
+        for (Flower flower : allRequestedFlowers) {
+
+            if (flower.isActive()) {
+                activeFlowers.add(flower);
+                price += flower.getPrice();
+            }
+
+        }
+
+        Bouquet bouquet = BouquetMapper.toEntity(dto);
+        bouquet.setFlowers(activeFlowers);
+
+        bouquet.setPrice(price);
+        bouquet.setActive(true);
+
+        return BouquetMapper.toDto(bouquetRepository.save(bouquet));
+    }
+
+    @Transactional
+    public BouquetDto update(Long id, BouquetDto dto) {
+
+        Bouquet bouquet = findEntityById(id);
+
+        bouquet.setName(dto.getName());
+        bouquet.setActive(dto.isActive());
+        bouquet.setWrappingPaper(dto.isWrappingPaper());
+        bouquet.setRibbon(dto.isRibbon());
+
+        if (dto.getFlowers() != null) {
+
+            List<Long> flowerIds = dto.getFlowers().stream()
+                    .map(FlowerDto::getId)
+                    .toList();
+
+
+            List<Flower> allRequestedFlowers = flowerRepository.findAllById(flowerIds);
+            List<Flower> activeFlowers = new ArrayList<>();
+            double price = 0;
+
+            for (Flower flower : allRequestedFlowers) {
+                if (flower.isActive()) {
+                    activeFlowers.add(flower);
+                    price += flower.getPrice();
+                }
+            }
+
+            bouquet.setFlowers(activeFlowers);
+            bouquet.setPrice(price);
+        }
+
+        return BouquetMapper.toDto(bouquetRepository.save(bouquet));
+    }
+
+    @Transactional
+    public BouquetDto updateStatus(Long id, boolean active) {
+
+        Bouquet bouquet = findEntityById(id);
+
+
+
+        if (active) {
+            for (Flower flower : bouquet.getFlowers()) {
+
+                if (!flower.isActive()) {
+
+                    return BouquetMapper.toDto(bouquet);
+                }
+            }
+        }
+        bouquet.setActive(active);
+        return BouquetMapper.toDto(bouquetRepository.save(bouquet));
     }
 }

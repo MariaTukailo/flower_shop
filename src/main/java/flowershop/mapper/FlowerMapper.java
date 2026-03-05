@@ -2,12 +2,11 @@ package flowershop.mapper;
 
 import flowershop.dto.FlowerDto;
 import flowershop.entity.Flower;
+import flowershop.enums.Color;
 
 public class FlowerMapper {
 
-    private FlowerMapper() {
-
-    }
+    private FlowerMapper() { }
 
     public static FlowerDto toDto(Flower flower) {
 
@@ -17,25 +16,27 @@ public class FlowerMapper {
 
         FlowerDto flowerDto = new FlowerDto();
         flowerDto.setId(flower.getId());
-        flowerDto.setCatalogNumber(flower.getCatalogNumber());
         flowerDto.setName(flower.getName());
+        flowerDto.setActive(flower.isActive());
         flowerDto.setPrice(flower.getPrice());
-        flowerDto.setColor(flower.getColor());
+        if (flower.getColor() != null) {
+            flowerDto.setColor(flower.getColor().name());
+        }
 
         return flowerDto;
     }
 
-    public static Flower toEntity(FlowerDto dto) {
-        if (dto == null) {
+    public static Flower toEntity(FlowerDto flowerDto) {
+        if (flowerDto == null) {
             return null;
         }
 
         Flower flower = new Flower();
-        flower.setId(dto.getId());
-        flower.setCatalogNumber(dto.getCatalogNumber());
-        flower.setName(dto.getName());
-        flower.setPrice(dto.getPrice());
-        flower.setColor(dto.getColor());
+        flower.setId(flowerDto.getId());
+        flower.setName(flowerDto.getName());
+        flower.setPrice(flowerDto.getPrice());
+        flower.setActive(flowerDto.isActive());
+        flower.setColor(Color.fromString(flowerDto.getColor()));
 
         return flower;
     }

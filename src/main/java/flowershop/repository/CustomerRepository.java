@@ -12,6 +12,6 @@ import java.util.List;
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     @EntityGraph(attributePaths = {"orders"})
-    @Query("SELECT b FROM Customer b")
+    @Query("SELECT c FROM Customer c")
     List<Customer> findAllWithOrders();
 }

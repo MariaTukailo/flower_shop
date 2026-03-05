@@ -1,16 +1,9 @@
 package flowershop.controller;
 
-import flowershop.entity.Order;
+import flowershop.dto.OrderDto;
 import flowershop.service.OrderService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,28 +14,35 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @PostMapping("/checkout/{customerId}")
-    public Order createOrder(@PathVariable Long customerId) {
-        return orderService.createOrder(customerId);
+
+    @GetMapping
+    public List<OrderDto> findAll() {
+        return orderService.findAll();
     }
 
     @GetMapping("/{id}")
-    public Order getById(@PathVariable Long id) {
-        return orderService.getById(id);
+    public OrderDto findById(@PathVariable Long id) {
+        OrderDto orderDto = orderService.findById(id);
+        if (orderDto == null) {
+            return null;
+        }
+        return orderDto;
     }
 
-    @GetMapping
-    public List<Order> getAll() {
-        return orderService.getAll();
+
+    @PostMapping("/checkout/{customerId}")
+    public OrderDto createFromCart(@PathVariable Long customerId) {
+        OrderDto orderDto = orderService.createFromCart(customerId);
+        if (orderDto == null) {
+
+            return null;
+        }
+        return orderDto;
     }
+
 
     @PatchMapping("/{id}/status")
-    public Order updateStatus(@PathVariable Long id, @RequestParam String newStatus) {
-        return orderService.updateStatus(id, newStatus);
-    }
-
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        orderService.deleteOrder(id);
+    public OrderDto updateStatus(@PathVariable Long id, @RequestParam String status) {
+        return orderService.updateStatus(id, status);
     }
 }

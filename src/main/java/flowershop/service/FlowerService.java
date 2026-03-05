@@ -1,10 +1,10 @@
 package flowershop.service;
 
 import flowershop.dto.FlowerDto;
+import flowershop.enums.Color;
+import flowershop.mapper.FlowerMapper;
 import flowershop.entity.Bouquet;
 import flowershop.entity.Flower;
-import flowershop.exception.TransactionDemoException;
-import flowershop.mapper.FlowerMapper;
 import flowershop.repository.FlowerRepository;
 import flowershop.repository.BouquetRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,71 +19,94 @@ public class FlowerService {
 
     private final FlowerRepository flowerRepository;
     private final BouquetRepository bouquetRepository;
-    private final BouquetService bouquetService; // Добавляем его сюда
 
-    public List<FlowerDto> getAllFlowers() {
+    private Flower findEntityById(Long id) {
+
+        return flowerRepository.findById(id).orElse(null);
+    }
+
+    public List<FlowerDto> findAll() {
+        List<Flower> flowers = flowerRepository.findAll();
+
+        return flowers.stream()
+                .map(FlowerMapper::toDto)
+                .toList();
+    }
+
+    public FlowerDto findById(Long id) {
+        Flower flower = flowerRepository.findById(id).orElse(null);
+        if (flower == null) {
+            return null;
+        }
+
+        return FlowerMapper.toDto(flower);
+    }
+
+    public List<FlowerDto> findAllActive() {
         return flowerRepository.findAll().stream()
+                .filter(Flower::isActive)
                 .map(FlowerMapper::toDto)
                 .toList();
     }
 
     @Transactional
-    public FlowerDto saveFlower(FlowerDto dto) {
+    public FlowerDto create(FlowerDto dto) {
+
         Flower flower = FlowerMapper.toEntity(dto);
         return FlowerMapper.toDto(flowerRepository.save(flower));
     }
 
     @Transactional
-    public void deleteFlower(Long flowerId) {
-        Flower flower = flowerRepository.findById(flowerId)
-                .orElseThrow(() -> new TransactionDemoException("Цветок не найден"));
+    public FlowerDto update(Long id, FlowerDto dto) {
 
-        List<Bouquet> allBouquets = bouquetRepository.findAll();
-        for (Bouquet bouquet : allBouquets) {
-            if (bouquet.getFlowers().contains(flower)) {
+        Flower flower = findEntityById(id);
 
-                bouquetService.delete(bouquet.getId());
+        double oldPrice = flower.getPrice();
+        double newPrice = dto.getPrice();
+
+
+        if (oldPrice != newPrice) {
+
+            List<Bouquet> bouquets = bouquetRepository.findAllWithFlowers();
+
+            for (Bouquet bouquet : bouquets) {
+
+                if (bouquet.getFlowers() != null && bouquet.getFlowers().contains(flower)) {
+
+                    double updatedBouquetPrice = bouquet.getPrice() - oldPrice + newPrice;
+                    bouquet.setPrice(updatedBouquetPrice);
+
+                }
             }
         }
-        flowerRepository.delete(flower);
+
+        flower.setName(dto.getName());
+        flower.setActive(dto.isActive());
+        flower.setPrice(dto.getPrice());
+        flower.setColor(Color.fromString(dto.getColor()));
+
+        return FlowerMapper.toDto(flowerRepository.save(flower));
     }
 
     @Transactional
-    public FlowerDto updateFlower(Long id, FlowerDto dto) {
-        Flower flower = flowerRepository.findById(id)
-                .orElseThrow(() -> new TransactionDemoException("Цветок не найден"));
+    public FlowerDto updateStatus(Long id, boolean active) {
 
-        flower.setName(dto.getName());
-        flower.setColor(dto.getColor());
-        flower.setPrice(dto.getPrice());
-        flower.setCatalogNumber(dto.getCatalogNumber());
-
-        Flower updated = flowerRepository.save(flower);
+        Flower flower = findEntityById(id);
+        flower.setActive(active);
 
 
+        if (!active) {
 
-        return FlowerMapper.toDto(updated);
-    }
+            List<Bouquet> bouquets = bouquetRepository.findAllWithFlowers();
+            for (Bouquet bouquet : bouquets) {
+                if (bouquet.getFlowers() != null && bouquet.getFlowers().contains(flower)) {
+                    bouquet.setActive(false);
 
-    public FlowerDto findFlowerByCatalogNumber(int id) {
-
-        Flower flowerOther = flowerRepository.findAll().stream()
-                .filter(flower -> flower.getCatalogNumber() == id)
-                .findFirst().orElse(null);
-
-        return FlowerMapper.toDto(flowerOther);
-    }
-
-    public List<FlowerDto> findFlowersByColor(String color) {
-
-        if (color == null || color.isEmpty()) {
-            return getAllFlowers();
+                }
+            }
         }
 
-        return flowerRepository.findAll()
-                .stream()
-                .filter(flower -> flower.getColor().equalsIgnoreCase(color))
-                .map(FlowerMapper::toDto)
-                .toList();
+        return FlowerMapper.toDto(flowerRepository.save(flower));
     }
+
 }

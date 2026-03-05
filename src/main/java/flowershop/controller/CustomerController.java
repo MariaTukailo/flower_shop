@@ -1,6 +1,6 @@
 package flowershop.controller;
 
-import flowershop.entity.Customer;
+import flowershop.dto.CustomerDto;
 import flowershop.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -22,56 +21,48 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
-    @GetMapping("/simple")
-    public List<Customer> getAllSimple() {
-        return customerService.getAll();
+
+    @GetMapping
+    public List<CustomerDto> findAll() {
+        return customerService.findAll();
     }
 
-    @GetMapping("/with-orders")
-    public List<Customer> getAllWithOrders() {
-        return customerService.getAll();
-    }
-
-    @PostMapping
-    public Customer create(@RequestBody Customer customer) {
-        return customerService.save(customer);
-    }
-
-    @DeleteMapping("/{id}")
-    public String delete(@PathVariable Long id) {
-        customerService.deleteCustomer(id);
-        return "Пользователь с id " + id + " и его корзина успешно удалены";
-    }
 
     @GetMapping("/{id}")
-    public Customer getById(@PathVariable Long id) {
-        return customerService.findById(id);
+    public CustomerDto findById(@PathVariable Long id) {
+        CustomerDto customerDto = customerService.findById(id);
+        if (customerDto == null) {
+            return null;
+        }
+        return customerDto;
     }
+
+
+    @PostMapping
+    public CustomerDto create(@RequestBody CustomerDto dto) {
+
+        return customerService.createTransactional(dto);
+    }
+
 
     @PutMapping("/{id}")
-    public Customer update(@PathVariable Long id, @RequestBody Customer customerDetails) {
-        return customerService.update(id, customerDetails);
-    }
-
-    @PostMapping("/test-transaction")
-    public String testTransaction(
-            @RequestParam String name,
-            @RequestParam String phone,
-            @RequestParam boolean error) {
-        customerService.createCustomerWithCart(name, phone, error);
-        return "Операция успешно завершена";
+    public CustomerDto update(@PathVariable Long id, @RequestBody CustomerDto dto) {
+        return customerService.update(id, dto);
     }
 
 
-    @PostMapping("/test/with-transaction")
-    public String testWith(@RequestParam String name, @RequestParam String phone, @RequestParam boolean error) {
-        customerService.createWithTransaction(name, phone, error);
-        return "Успешно (с транзакцией)";
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        customerService.delete(id);
     }
 
-    @PostMapping("/test/no-transaction")
-    public String testWithout(@RequestParam String name, @RequestParam String phone, @RequestParam boolean error) {
-        customerService.createWithoutTransaction(name, phone, error);
-        return "Успешно (без транзакции)";
+    @PostMapping("/test-no-tx")
+    public CustomerDto testNoTx(@RequestBody CustomerDto dto) {
+        return customerService.createWithoutTransaction(dto);
+    }
+
+    @PostMapping("/test-tx")
+    public CustomerDto testTx(@RequestBody CustomerDto dto) {
+        return customerService.createWithTransaction(dto);
     }
 }

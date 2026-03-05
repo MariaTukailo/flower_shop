@@ -3,20 +3,13 @@ package flowershop.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderDto {
-    private Long id;
-    private LocalDateTime date;
-    private double finalPrice;
-    private String status;
+public class ShoppingCartsDto {
 
     private Long customerId;
-
     private List<BouquetDto> bouquets;
 }

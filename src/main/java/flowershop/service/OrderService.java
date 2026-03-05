@@ -1,15 +1,21 @@
 package flowershop.service;
 
+import flowershop.dto.OrderDto;
+import flowershop.entity.Bouquet;
 import flowershop.entity.Order;
 import flowershop.entity.ShoppingCart;
-import flowershop.exception.TransactionDemoException;
+import flowershop.enums.OrderStatus;
+import flowershop.mapper.OrderMapper;
 import flowershop.repository.OrderRepository;
+import flowershop.repository.ShoppingCartRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import flowershop.entity.Customer;
 import flowershop.repository.CustomerRepository;
+
 import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,65 +24,79 @@ import java.util.List;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final ShoppingCartService shoppingCartService;
     private final CustomerRepository customerRepository;
+    private final ShoppingCartRepository shoppingCartRepository;
 
-    public Order getById(Long id) {
-        return orderRepository.findById(id)
-                .orElseThrow(() -> new TransactionDemoException("Заказ№" + id + " не найден"));
+    private Order findEntityById(Long id) {
+        return orderRepository.findById(id).orElse(null);
     }
 
-    @Transactional
-    public Order createOrder(Long customerId) {
+    public List<OrderDto> findAll() {
+        List<Order> orders = orderRepository.findAll();
+        return orders.stream()
+                .map(OrderMapper::toDto)
+                .toList();
+    }
 
-        Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new TransactionDemoException("Клиент не найден"));
+    public OrderDto findById(Long id) {
+        Order order = findEntityById(id);
+        return OrderMapper.toDto(order);
+    }
+
+
+
+    @Transactional
+    public OrderDto createFromCart(Long customerId) {
+
+        Customer customer = customerRepository.findById(customerId).orElse(null);
+        if (customer == null || customer.getCart() == null) {
+            return null;
+        }
 
         ShoppingCart cart = customer.getCart();
-        if (cart == null || cart.getBouquets().isEmpty()) {
-            throw new TransactionDemoException("Корзина пуста!");
+        List<Bouquet> bouquetsInCart = cart.getBouquets();
+
+        if (bouquetsInCart == null || bouquetsInCart.isEmpty()) {
+            return null;
+        }
+
+        for (Bouquet bouquet : bouquetsInCart) {
+            if (!bouquet.isActive()) {
+
+                return null;
+            }
         }
 
 
         Order order = new Order();
+        order.setCustomer(customer);
         order.setDate(LocalDateTime.now());
-        order.setStatus("ПРИНЯТ");
+        order.setStatus(OrderStatus.PROCESSING);
 
 
+        order.setBouquets(new ArrayList<>(bouquetsInCart));
 
-        List<String> receipt = cart.getBouquets().stream()
-                .map(b -> b.getName() + "+" )
-                .toList();
-        order.setItems(new ArrayList<>(receipt));
+        double total = 0;
+        for (Bouquet bouquet : bouquetsInCart) {
+            total += bouquet.getPrice();
+        }
+        order.setFinalPrice(total);
 
-        Order savedOrder = orderRepository.save(order);
+        cart.getBouquets().clear();
+        shoppingCartRepository.save(cart);
 
-        customer.getOrders().add(savedOrder);
-        customerRepository.save(customer);
-        shoppingCartService.clear(customerId);
-
-        return savedOrder;
+        return OrderMapper.toDto(orderRepository.save(order));
     }
 
     @Transactional
-    public Order updateStatus(Long orderId, String newStatus) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new TransactionDemoException("Заказ №" + orderId + " не найден"));
+    public OrderDto updateStatus(Long id, String statusValue) {
+        Order order = findEntityById(id);
 
-        order.setStatus(newStatus);
-        return orderRepository.save(order);
-    }
+        OrderStatus newStatus = OrderStatus.fromString(statusValue);
+        if (newStatus != null) {
+            order.setStatus(newStatus);
+        }
 
-    // 3. Удаление заказа
-    @Transactional
-    public void deleteOrder(Long orderId) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new TransactionDemoException("Заказ №" + orderId + " не найдено"));
-
-        orderRepository.delete(order);
-    }
-
-    public List<Order> getAll() {
-        return orderRepository.findAll();
+        return OrderMapper.toDto(orderRepository.save(order));
     }
 }
