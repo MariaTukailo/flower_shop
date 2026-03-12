@@ -14,13 +14,14 @@ import java.util.List;
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
-    @Query("SELECT DISTINCT c From Customer c " +
+    @Query("SELECT c From Customer c " +
             "JOIN c.orders o " +
             "JOIN o.bouquets b " +
             "JOIN b.flowers f " +
             "WHERE f.id=:flowerId " +
             "AND CAST (o.status AS string) IN :status " +
-            "AND o.deliveryDate=:date"
+            "AND o.deliveryDate=:date " +
+            "GROUP BY c.id, o.deliveryDate"
     )
     Page<Customer> findByFlower(@Param("flowerId") Long flowerId,
                                        @Param("date") LocalDate date,
