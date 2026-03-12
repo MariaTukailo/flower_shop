@@ -113,19 +113,19 @@ public class CustomerService {
 
     }
 
-    public Page<CustomerDto> findByFlower(Long flowerId, LocalDate date, int page, int size) {
+    public Page<CustomerDto> findByFlower(String flowerName, LocalDate date, int page, int size) {
 
         List<String> orderStatuses = List.of(OrderStatus.PROCESSING.name(), OrderStatus.ACCEPTED.name());
         Pageable pageable = PageRequest.of(page, size, Sort.by("o.deliveryDate").descending());
 
-        SearchKey key = new SearchKey(flowerId, orderStatuses, date, page, size);
+        SearchKey key = new SearchKey(flowerName, orderStatuses, date, page, size);
 
         if (hashMap.containsKey(key)) {
             log.info("Данные взяты из кеша ");
             return hashMap.get(key);
         }
 
-        Page<Customer> customers = customerRepository.findByFlower(flowerId, date, orderStatuses, pageable);
+        Page<Customer> customers = customerRepository.findByFlower(flowerName, date, orderStatuses, pageable);
         Page<CustomerDto> customersDto = customers.map(CustomerMapper::toDto);
 
         hashMap.put(key, customersDto);
@@ -134,20 +134,20 @@ public class CustomerService {
 
     }
 
-    public Page<CustomerDto> findByFlowerNative(Long flowerId, LocalDate date, int page, int size) {
+    public Page<CustomerDto> findByFlowerNative(String flowerName, LocalDate date, int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("o.delivery_date").descending());
         List<String> orderStatuses = List.of(OrderStatus.PROCESSING.name(), OrderStatus.ACCEPTED.name());
 
 
-        SearchKey key = new SearchKey(flowerId, orderStatuses, date, page, size);
+        SearchKey key = new SearchKey(flowerName, orderStatuses, date, page, size);
 
         if (hashMap.containsKey(key)) {
             log.info("Данные взяты из кеша");
             return hashMap.get(key);
         }
 
-        Page<Customer> customers = customerRepository.findByFlowerNative(flowerId, date, orderStatuses, pageable);
+        Page<Customer> customers = customerRepository.findByFlowerNative(flowerName, date, orderStatuses, pageable);
         Page<CustomerDto> customersDto = customers.map(CustomerMapper::toDto);
 
         hashMap.put(key, customersDto);
