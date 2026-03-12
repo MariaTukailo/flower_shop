@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -115,7 +116,7 @@ public class CustomerService {
     public Page<CustomerDto> findByFlower(Long flowerId, LocalDate date, int page, int size) {
 
         List<String> orderStatuses = List.of(OrderStatus.PROCESSING.name(), OrderStatus.ACCEPTED.name());
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("o.deliveryDate").descending());
 
         SearchKey key = new SearchKey(flowerId, orderStatuses, date, page, size);
 
@@ -135,7 +136,7 @@ public class CustomerService {
 
     public Page<CustomerDto> findByFlowerNative(Long flowerId, LocalDate date, int page, int size) {
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("o.delivery_date").descending());
         List<String> orderStatuses = List.of(OrderStatus.PROCESSING.name(), OrderStatus.ACCEPTED.name());
 
 

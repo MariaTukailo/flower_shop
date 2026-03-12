@@ -27,14 +27,16 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
                                        @Param("status") List<String> statuses,
                                        Pageable pageable);
 
-    @Query(value = "SELECT DISTINCT c.* FROM customers c " +
+    @Query(value = "SELECT  c.* FROM customers c " +
             "JOIN orders o ON c.id = o.customer_id " +
             "JOIN order_bouquets ob ON o.id = ob.orders_id " +
             "JOIN bouquets b ON b.id = ob.bouquets_id " +
             "JOIN bouquet_flowers bf ON b.id = bf.bouquet_id " +
             "JOIN flower f ON f.id = bf.flower_id " +
             "WHERE f.id = :flowerId " +
-            "AND o.status::text IN :statuses",
+            "AND o.status::text IN :statuses " +
+            "AND o.delivery_date = :date " +
+            "GROUP BY c.id, o.delivery_date",
             countQuery = "SELECT count(DISTINCT c.id) FROM customers c " +
                     "JOIN orders o ON c.id = o.customer_id " +
                     "JOIN order_bouquets ob ON o.id = ob.orders_id " +
