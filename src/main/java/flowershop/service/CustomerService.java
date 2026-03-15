@@ -124,6 +124,7 @@ public class CustomerService {
         log.info("Покупатель с ID {} успешно удален ", id);
     }
 
+<<<<<<< HEAD
     public Page<CustomerDto> findByFlower(Long flowerId, LocalDate date, int page, int size) {
         log.info("Начало поиска покупателей имеющих активные заказы, в которых содержится определенный цветок");
         List<String> orderStatuses = List.of(OrderStatus.PROCESSING.name(), OrderStatus.ACCEPTED.name());
@@ -131,6 +132,14 @@ public class CustomerService {
 
         log.debug("Создание ключа");
         SearchKey key = new SearchKey(flowerId, orderStatuses, date, page, size);
+=======
+    public Page<CustomerDto> findByFlower(String flowerName, LocalDate date, int page, int size) {
+
+        List<String> orderStatuses = List.of(OrderStatus.PROCESSING.name(), OrderStatus.ACCEPTED.name());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("o.deliveryDate").descending());
+
+        SearchKey key = new SearchKey(flowerName, orderStatuses, date, page, size);
+>>>>>>> 8e50425b6de151fde8d97fbab02caad86bf4bf12
 
         log.debug("Поиск операции в хеш-таблице");
         if (hashMap.containsKey(key)) {
@@ -138,9 +147,13 @@ public class CustomerService {
             return hashMap.get(key);
         }
 
+<<<<<<< HEAD
         log.debug("Выполнение поиска");
         Page<Customer> customers = customerRepository.findByFlower(flowerId, date, orderStatuses, pageable);
         log.debug("Преобразование в Dto");
+=======
+        Page<Customer> customers = customerRepository.findByFlower(flowerName, date, orderStatuses, pageable);
+>>>>>>> 8e50425b6de151fde8d97fbab02caad86bf4bf12
         Page<CustomerDto> customersDto = customers.map(CustomerMapper::toDto);
 
         log.debug("Добавление операции в хеш-таблицу");
@@ -150,6 +163,7 @@ public class CustomerService {
 
     }
 
+<<<<<<< HEAD
     public Page<CustomerDto> findByFlowerNative(Long flowerId, LocalDate date, int page, int size) {
         log.info("Начало поиска покупателей имеющих активные заказы,  в которых содержится определенный цветок");
         Pageable pageable = PageRequest.of(page, size, Sort.by("o.delivery_date").descending());
@@ -157,6 +171,15 @@ public class CustomerService {
 
         log.debug("Создание  ключа");
         SearchKey key = new SearchKey(flowerId, orderStatuses, date, page, size);
+=======
+    public Page<CustomerDto> findByFlowerNative(String flowerName, LocalDate date, int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("o.delivery_date").descending());
+        List<String> orderStatuses = List.of(OrderStatus.PROCESSING.name(), OrderStatus.ACCEPTED.name());
+
+
+        SearchKey key = new SearchKey(flowerName, orderStatuses, date, page, size);
+>>>>>>> 8e50425b6de151fde8d97fbab02caad86bf4bf12
 
         log.debug("Поиск  операции в хеш-таблице");
         if (hashMap.containsKey(key)) {
@@ -164,9 +187,13 @@ public class CustomerService {
             return hashMap.get(key);
         }
 
+<<<<<<< HEAD
         log.debug("Выполнение  поиска");
         Page<Customer> customers = customerRepository.findByFlowerNative(flowerId, date, orderStatuses, pageable);
         log.debug("Преобразование в  Dto");
+=======
+        Page<Customer> customers = customerRepository.findByFlowerNative(flowerName, date, orderStatuses, pageable);
+>>>>>>> 8e50425b6de151fde8d97fbab02caad86bf4bf12
         Page<CustomerDto> customersDto = customers.map(CustomerMapper::toDto);
 
         log.debug("Добавление операции  в хеш-таблицу");

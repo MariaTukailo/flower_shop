@@ -18,12 +18,12 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
             "JOIN c.orders o " +
             "JOIN o.bouquets b " +
             "JOIN b.flowers f " +
-            "WHERE f.id=:flowerId " +
+            "WHERE f.name=:flowerName " +
             "AND CAST (o.status AS string) IN :status " +
             "AND o.deliveryDate=:date " +
             "GROUP BY c.id, o.deliveryDate"
     )
-    Page<Customer> findByFlower(@Param("flowerId") Long flowerId,
+    Page<Customer> findByFlower(@Param("flowerName") String flowerName,
                                        @Param("date") LocalDate date,
                                        @Param("status") List<String> statuses,
                                        Pageable pageable);
@@ -34,7 +34,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
             "JOIN bouquets b ON b.id = ob.bouquets_id " +
             "JOIN bouquet_flowers bf ON b.id = bf.bouquet_id " +
             "JOIN flower f ON f.id = bf.flower_id " +
-            "WHERE f.id = :flowerId " +
+            "WHERE f.name = :flowerName " +
             "AND o.status::text IN :statuses " +
             "AND o.delivery_date = :date " +
             "GROUP BY c.id, o.delivery_date",
@@ -43,11 +43,11 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
                     "JOIN order_bouquets ob ON o.id = ob.orders_id " +
                     "JOIN bouquets b ON b.id = ob.bouquets_id " +
                     "JOIN bouquet_flowers bf ON b.id = bf.bouquet_id " +
-                    "JOIN flower f ON f.id = bf.flower_id " +
+                    "JOIN flower f ON f.name = bf.flower_name " +
                     "WHERE f.id = :flowerId AND o.status::text IN :statuses " +
                     "AND o.delivery_date = :date",
             nativeQuery = true)
-    Page<Customer> findByFlowerNative(@Param("flowerId") Long flowerId,
+    Page<Customer> findByFlowerNative(@Param("flowerName") String flowerName,
                                              @Param("date") LocalDate date,
                                              @Param("statuses") List<String> statuses,
                                              Pageable pageable);

@@ -64,20 +64,20 @@ public class CustomerController {
     @Operation(summary = "Получить всех покупателей с активными заказами, в которых содержится определенный цветок (JPQL)",
             description = "Возвращает список найденных покупателей ")
     @GetMapping("/find-by-flowers")
-    public Page<CustomerDto> findByFlowers(@RequestParam Long flowerId,
+    public Page<CustomerDto> findByFlowers(@RequestParam String flowerName,
                                            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
                                            @RequestParam(defaultValue = "0") int page,
                                            @RequestParam(defaultValue = "1") int size) {
-        return customerService.findByFlower(flowerId, date, page, size);
+        return customerService.findByFlower(flowerName, date, page, size);
     }
 
     @Operation(summary = "Получить всех покупателей с активными заказами, в которых содержится определенный цветок (native)",
               description = "Возвращает список найденных покупателей ")
     @GetMapping("/find-by-flowers-native")
-    public Page<CustomerDto> findByFlowersNative(@RequestParam Long flowerId,
+    public Page<CustomerDto> findByFlowersNative(@RequestParam String flowerName,
                                                  @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
                                                  @RequestParam(defaultValue = "0") int page,
                                                  @RequestParam(defaultValue = "1") int size) {
-        return customerService.findByFlowerNative(flowerId, date, page, size);
+        return customerService.findByFlowerNative(flowerName, date, page, size);
     }
 }

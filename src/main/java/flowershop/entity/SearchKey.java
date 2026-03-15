@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SearchKey {
-    private Long flowerId;
+    private String flowerName;
     private List<String> orderStatuses;
     LocalDate date;
     private int page;
