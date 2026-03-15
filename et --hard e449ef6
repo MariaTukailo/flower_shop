@@ -1,0 +1,37 @@
+[33m997f869[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m HEAD@{0}: reset: moving to HEAD~1
+[33mab34055[m HEAD@{1}: reset: moving to HEAD~1
+[33m6578a52[m HEAD@{2}: reset: moving to HEAD~1
+[33m61fb0ba[m HEAD@{3}: reset: moving to HEAD~1
+[33me449ef6[m HEAD@{4}: reset: moving to HEAD~1
+[33m8e50425[m[33m ([m[1;31morigin/main[m[33m)[m HEAD@{5}: commit: 3 new
+[33me449ef6[m HEAD@{6}: commit: 3
+[33m61fb0ba[m HEAD@{7}: commit: laba 3 final2
+[33m6578a52[m HEAD@{8}: commit: 3 laba final
+[33mab34055[m HEAD@{9}: commit: 3 laba
+[33m997f869[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m HEAD@{10}: commit: final2
+[33m48261a3[m HEAD@{11}: commit: lab2-Final
+[33m68c5630[m HEAD@{12}: reset: moving to 68c5630
+[33mb295dac[m HEAD@{13}: reset: moving to HEAD~1
+[33m68c5630[m HEAD@{14}: commit: new lab2
+[33mb295dac[m HEAD@{15}: commit: new
+[33m3cebb86[m HEAD@{16}: commit: new
+[33mdbd9d26[m HEAD@{17}: commit: lab2
+[33mfc03920[m HEAD@{18}: commit: laba 2
+[33mc4272e9[m HEAD@{19}: commit: new
+[33mf74e340[m HEAD@{20}: commit: 2 laba
+[33mac3042f[m HEAD@{21}: commit: new classes
+[33mbe0af3d[m HEAD@{22}: reset: moving to HEAD
+[33mbe0af3d[m HEAD@{23}: commit: new redme
+[33m48838fe[m HEAD@{24}: commit: new
+[33meedea24[m HEAD@{25}: commit: new
+[33m168c793[m HEAD@{26}: commit: Redme in Russian + link to Sonar
+[33m97b4042[m HEAD@{27}: commit: Redme in Russian + link to Sonar
+[33m8305771[m HEAD@{28}: commit: Redme in Russian + link to Sonar
+[33m83a8026[m HEAD@{29}: commit: Redme in Russian + link to Sonar
+[33ma0659cb[m HEAD@{30}: commit: new
+[33mde8eeb5[m HEAD@{31}: pull origin main: Fast-forward
+[33m83bc1da[m HEAD@{32}: commit: update code
+[33ma1d7064[m HEAD@{33}: rebase (finish): returning to refs/heads/main
+[33ma1d7064[m HEAD@{34}: commit: the first laboratory
+[33mf5dc738[m HEAD@{35}: pull origin main --rebase (start): checkout f5dc7382430636e5a1c53a1bf366e1cd45fad8a9
+[33m53329f1[m HEAD@{36}: commit (initial): the first laboratory

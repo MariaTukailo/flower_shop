@@ -2,6 +2,9 @@ package flowershop.controller;
 
 import flowershop.dto.CustomerDto;
 import flowershop.service.CustomerService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDate;
 import java.util.List;
 
+@Tag(name = "Управление покупателями", description = "Методы для работы с покупателями магазина")
 @RestController
 @RequestMapping("/customers")
 @RequiredArgsConstructor
@@ -25,47 +29,40 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
-
+    @Operation(summary = "Получить всех покупателей ", description = "Возвращает список всех покупателей ")
     @GetMapping
     public List<CustomerDto> findAll() {
         return customerService.findAll();
     }
 
 
+    @Operation(summary = "Найти покупателя по ID ", description = "Возвращает найденного покупателя ")
     @GetMapping("/{id}")
     public CustomerDto findById(@PathVariable Long id) {
         return customerService.findById(id);
     }
 
-
+    @Operation(summary = "Создать покупателя", description = "Создает покупателя ")
     @PostMapping
-    public CustomerDto create(@RequestBody CustomerDto dto) {
+    public CustomerDto create(@Valid @RequestBody CustomerDto dto) {
 
         return customerService.createTransactional(dto);
     }
 
-
+    @Operation(summary = "Изменить покупателя ", description = "Изменяет параметры определенного покупателя ")
     @PutMapping("/{id}")
-    public CustomerDto update(@PathVariable Long id, @RequestBody CustomerDto dto) {
+    public CustomerDto update(@PathVariable Long id, @Valid @RequestBody CustomerDto dto) {
         return customerService.update(id, dto);
     }
 
-
+    @Operation(summary = "Удалить покупателя", description = "Удаляет определенного покупателя ")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         customerService.delete(id);
     }
 
-    @PostMapping("/test-no-tx")
-    public CustomerDto testNoTx(@RequestBody CustomerDto dto) {
-        return customerService.createWithoutTransaction(dto);
-    }
-
-    @PostMapping("/test-tx")
-    public CustomerDto testTx(@RequestBody CustomerDto dto) {
-        return customerService.createWithTransaction(dto);
-    }
-
+    @Operation(summary = "Получить всех покупателей с активными заказами, в которых содержится определенный цветок (JPQL)",
+            description = "Возвращает список найденных покупателей ")
     @GetMapping("/find-by-flowers")
     public Page<CustomerDto> findByFlowers(@RequestParam Long flowerId,
                                            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
@@ -74,6 +71,8 @@ public class CustomerController {
         return customerService.findByFlower(flowerId, date, page, size);
     }
 
+    @Operation(summary = "Получить всех покупателей с активными заказами, в которых содержится определенный цветок (native)",
+              description = "Возвращает список найденных покупателей ")
     @GetMapping("/find-by-flowers-native")
     public Page<CustomerDto> findByFlowersNative(@RequestParam Long flowerId,
                                                  @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,

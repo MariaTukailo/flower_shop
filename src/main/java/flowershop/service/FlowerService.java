@@ -9,11 +9,13 @@ import flowershop.entity.Flower;
 import flowershop.repository.FlowerRepository;
 import flowershop.repository.BouquetRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FlowerService {
@@ -23,11 +25,12 @@ public class FlowerService {
     private final CustomerHashMap hashMap;
 
     private Flower findEntityById(Long id) {
-
+        log.debug("Поиск цветка по ID {}", id);
         return flowerRepository.findById(id).orElse(null);
     }
 
     public List<FlowerDto> findAll() {
+        log.debug("Поиск всех цветов ");
         List<Flower> flowers = flowerRepository.findAll();
 
         return flowers.stream()
@@ -36,8 +39,10 @@ public class FlowerService {
     }
 
     public FlowerDto findById(Long id) {
+        log.debug("Поиск  цветка по ID  {}", id);
         Flower flower = flowerRepository.findById(id).orElse(null);
         if (flower == null) {
+            log.warn("Цветок  по ID не найден {}", id);
             return null;
         }
 
@@ -45,6 +50,7 @@ public class FlowerService {
     }
 
     public List<FlowerDto> findAllActive() {
+        log.debug("Поиск всех активных цветов ");
         return flowerRepository.findAll().stream()
                 .filter(Flower::isActive)
                 .map(FlowerMapper::toDto)
@@ -53,14 +59,18 @@ public class FlowerService {
 
     @Transactional
     public FlowerDto create(FlowerDto dto) {
-
+        log.info("Начало сохранения цветка под id {}", dto.getId());
         Flower flower = FlowerMapper.toEntity(dto);
-        return FlowerMapper.toDto(flowerRepository.save(flower));
+        FlowerDto createFlower = FlowerMapper.toDto(flowerRepository.save(flower));
+        log.info("Цветок успешно сохранен под id {}", dto.getId());
+
+        return createFlower;
     }
 
     @Transactional
     public FlowerDto update(Long id, FlowerDto dto) {
-
+        log.info("Начало изменения цветка под id {}", dto.getId());
+        log.debug("Поиск  цветка  по ID {} ", id);
         Flower flower = findEntityById(id);
 
         double oldPrice = flower.getPrice();
@@ -88,13 +98,16 @@ public class FlowerService {
         flower.setColor(Color.fromString(dto.getColor()));
 
         hashMap.clear();
+        FlowerDto updateFlower = FlowerMapper.toDto(flowerRepository.save(flower));
+        log.info(" Цветок под id {} успешно отредактирован", dto.getId());
 
-        return FlowerMapper.toDto(flowerRepository.save(flower));
+        return updateFlower;
     }
 
     @Transactional
     public FlowerDto updateStatus(Long id, boolean active) {
-
+        log.info("Начало изменения статуса цветка под id {}", id);
+        log.debug("Поиск   цветка  по ID {} ", id);
         Flower flower = findEntityById(id);
         flower.setActive(active);
 
@@ -110,7 +123,9 @@ public class FlowerService {
             }
         }
 
-        return FlowerMapper.toDto(flowerRepository.save(flower));
+        FlowerDto updateStatusFlower = FlowerMapper.toDto(flowerRepository.save(flower));
+        log.info("статуса цветка под id {} успешно изменен", id);
+        return updateStatusFlower;
     }
 
 }

@@ -34,6 +34,7 @@ public class CustomerService {
     }
 
     public List<CustomerDto> findAll() {
+        log.debug("Поиск всех покупателей ");
         List<Customer> customers = customerRepository.findAll();
         return customers.stream()
                 .map(CustomerMapper::toDto)
@@ -41,24 +42,28 @@ public class CustomerService {
     }
 
     public CustomerDto findById(Long id) {
+        log.debug("Поиск  покупателей по ID : {} ", id);
         Customer customer = findEntityById(id);
         return CustomerMapper.toDto(customer);
     }
 
     @Transactional
     public CustomerDto createTransactional(CustomerDto dto) {
-
+        log.info("Начало сохранения покупателя под id {}", dto.getId());
         Customer customer = customerRepository.save(CustomerMapper.toEntity(dto));
 
+        log.debug("Создание корзины покупателя с ID : {} ", dto.getId());
         ShoppingCart cart = new ShoppingCart();
         cart.setCustomer(customer);
         cart.setId(customer.getId());
 
         customer.setCart(cart);
-
+        log.info("Корзина покупателя успешно сохранен в БД под ID: {}", cart.getId());
         hashMap.clear();
 
-        return CustomerMapper.toDto(customerRepository.save(customer));
+        CustomerDto save = CustomerMapper.toDto(customerRepository.save(customer));
+        log.info("Покупатель успешно сохранен в БД под ID: {}", save.getId());
+        return save;
     }
 
     public CustomerDto createWithoutTransaction(CustomerDto dto) {
@@ -93,64 +98,81 @@ public class CustomerService {
 
     @Transactional
     public CustomerDto update(Long id, CustomerDto dto) {
-        Customer customer = findEntityById(id);
 
+        log.info("Начало изменения покупателя под id {}", dto.getId());
+
+        log.debug("Поиск  покупателя по ID : {} ", id);
+        Customer customer = findEntityById(id);
 
         customer.setName(dto.getName());
         customer.setPhoneNumber(dto.getPhoneNumber());
 
         hashMap.clear();
-
-        return CustomerMapper.toDto(customerRepository.save(customer));
+        CustomerDto update = CustomerMapper.toDto(customerRepository.save(customer));
+        log.info("Покупатель под id {} успешно изменен", dto.getId());
+        return update;
     }
 
     @Transactional
     public void delete(Long id) {
+        log.info("Начало удаления покупателя под id {}", id);
+        log.debug("Поиск  покупателя  по ID : {} ", id);
         Customer customer = findEntityById(id);
 
         hashMap.clear();
         customerRepository.delete(customer);
-
+        log.info("Покупатель с ID {} успешно удален ", id);
     }
 
     public Page<CustomerDto> findByFlower(Long flowerId, LocalDate date, int page, int size) {
-
+        log.info("Начало поиска покупателей имеющих активные заказы, в которых содержится определенный цветок");
         List<String> orderStatuses = List.of(OrderStatus.PROCESSING.name(), OrderStatus.ACCEPTED.name());
         Pageable pageable = PageRequest.of(page, size, Sort.by("o.deliveryDate").descending());
 
+        log.debug("Создание ключа");
         SearchKey key = new SearchKey(flowerId, orderStatuses, date, page, size);
 
+        log.debug("Поиск операции в хеш-таблице");
         if (hashMap.containsKey(key)) {
             log.info("Данные взяты из кеша ");
             return hashMap.get(key);
         }
 
+        log.debug("Выполнение поиска");
         Page<Customer> customers = customerRepository.findByFlower(flowerId, date, orderStatuses, pageable);
+        log.debug("Преобразование в Dto");
         Page<CustomerDto> customersDto = customers.map(CustomerMapper::toDto);
 
+        log.debug("Добавление операции в хеш-таблицу");
         hashMap.put(key, customersDto);
-
+        log.info("Конец поиска покупателей имеющих активные заказы, в которых содержится определенный цветок");
         return customersDto;
 
     }
 
     public Page<CustomerDto> findByFlowerNative(Long flowerId, LocalDate date, int page, int size) {
-
+        log.info("Начало поиска покупателей имеющих активные заказы,  в которых содержится определенный цветок");
         Pageable pageable = PageRequest.of(page, size, Sort.by("o.delivery_date").descending());
         List<String> orderStatuses = List.of(OrderStatus.PROCESSING.name(), OrderStatus.ACCEPTED.name());
 
-
+        log.debug("Создание  ключа");
         SearchKey key = new SearchKey(flowerId, orderStatuses, date, page, size);
 
+        log.debug("Поиск  операции в хеш-таблице");
         if (hashMap.containsKey(key)) {
             log.info("Данные взяты из кеша");
             return hashMap.get(key);
         }
 
+        log.debug("Выполнение  поиска");
         Page<Customer> customers = customerRepository.findByFlowerNative(flowerId, date, orderStatuses, pageable);
+        log.debug("Преобразование в  Dto");
         Page<CustomerDto> customersDto = customers.map(CustomerMapper::toDto);
 
+        log.debug("Добавление операции  в хеш-таблицу");
         hashMap.put(key, customersDto);
+
+        log.info("Конец  поиска покупателей имеющих активные заказы, в которых содержится определенный цветок");
         return customersDto;
     }
 }
