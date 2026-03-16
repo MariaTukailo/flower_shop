@@ -20,6 +20,7 @@ import java.util.List;
 public class OrderDto {
 
     @Schema(description = "Уникальный идентификатор", example = "1")
+    @NotNull()
     private Long id;
 
     @Schema(description = "Дата заказа", example = "2026-05-20T14:30:00")

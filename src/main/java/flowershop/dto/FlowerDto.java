@@ -17,6 +17,7 @@ import lombok.AllArgsConstructor;
 public class FlowerDto {
 
     @Schema(description = "Уникальный идентификатор цветов", example = "1")
+    @NotNull()
     private Long id;
 
     @NotBlank(message = "Название не может быть пустым")

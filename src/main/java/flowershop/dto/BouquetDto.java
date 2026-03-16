@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 public class BouquetDto {
 
     @Schema(description = "Уникальный идентификатор", example = "1")
+    @NotNull()
     private Long id;
 
     @Schema(description = "Название букета", example = "Весенний")

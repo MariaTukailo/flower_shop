@@ -5,6 +5,8 @@ import flowershop.service.BouquetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -42,7 +44,8 @@ public class BouquetController {
 
     @Operation(summary = "Поиск букета по ID", description = "Возвращает найденный букет ")
     @GetMapping("/{id}")
-    public BouquetDto findById(@PathVariable Long id) {
+    public BouquetDto findById( @Min(value = 1, message = "ID букета должен быть положительным числом")
+                                    @Max(value = 999999, message = "ID букета слишком большой") @PathVariable Long id) {
         return bouquetService.findById(id);
     }
 

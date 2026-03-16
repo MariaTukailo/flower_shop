@@ -4,6 +4,8 @@ import flowershop.dto.BouquetDto;
 import flowershop.dto.FlowerDto;
 import flowershop.entity.Bouquet;
 import flowershop.entity.Flower;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.HttpStatus;
 import flowershop.mapper.BouquetMapper;
 import flowershop.repository.BouquetRepository;
 import flowershop.repository.FlowerRepository;
@@ -11,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +29,8 @@ public class BouquetService {
 
     private Bouquet findEntityById(Long id) {
         log.debug("Поиск букета по ID: {}", id);
-        return bouquetRepository.findById(id).orElse(null);
+        return bouquetRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Букет с ID " + id + " не найден"));
+
     }
 
     public List<BouquetDto> findAll() {
@@ -48,11 +52,8 @@ public class BouquetService {
 
     public BouquetDto findById(Long id) {
         log.debug("Поиск  букета по ID: {}", id);
-        Bouquet bouquet = bouquetRepository.findById(id).orElse(null);
-        if (bouquet == null) {
-            log.warn("Букет не найден по ID : {}", id);
-            return null;
-        }
+        Bouquet bouquet = bouquetRepository.findById(id).orElseThrow(() -> new EntityNotFoundException( "Букет с ID " + id + " не найден"));
+
 
         return BouquetMapper.toDto(bouquet);
     }
