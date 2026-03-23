@@ -1,6 +1,7 @@
 package flowershop.controller;
 
 import flowershop.dto.FlowerDto;
+import flowershop.entity.Flower;
 import flowershop.service.FlowerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,10 +42,30 @@ public class FlowerController {
         return flowerService.findAllActive();
     }
 
+
     @Operation(summary = "Найти цветы по ID ", description = "Возвращает найденные цветы по ID ")
     @GetMapping("/{id}")
     public FlowerDto findById(@PathVariable Long id) {
         return flowerService.findById(id);
+    }
+
+
+    @Operation(summary = "Создать цветы (bulk)", description = "Создает цветы (bulk)")
+    @PostMapping("/bulk")
+    public List<FlowerDto> addBulk(@Valid @RequestBody List<FlowerDto> flowers) {
+        return flowerService.saveAll(flowers);
+    }
+
+    @Operation(summary = "Создать цветы (bulk без Transactional)", description = "Создает цветы (bulk)")
+    @PostMapping("/bulkNotTransactional")
+    public List<FlowerDto> addBulkNotTransactional(@Valid @RequestBody List<FlowerDto> flowers) {
+        return flowerService.saveAllNotTransactional(flowers);
+    }
+
+    @Operation(summary = "Создать цветы (bulk без Transactional)", description = "Создает цветы (bulk)")
+    @PostMapping("/bulkTransactional")
+    public List<FlowerDto> addBulkTransactional(@Valid @RequestBody List<FlowerDto> flowers) {
+        return flowerService.saveAllTransactional(flowers);
     }
 
     @Operation(summary = "Создать цветы ", description = "Создает цветы ")
@@ -55,7 +76,7 @@ public class FlowerController {
 
     @Operation(summary = "Изменить определенные цветы ", description = "Изменяет определенные цветы ")
     @PutMapping("/{id}")
-    public FlowerDto update(@PathVariable Long id,@Valid @RequestBody FlowerDto dto) {
+    public FlowerDto update(@PathVariable Long id, @Valid @RequestBody FlowerDto dto) {
         return flowerService.update(id, dto);
     }
 

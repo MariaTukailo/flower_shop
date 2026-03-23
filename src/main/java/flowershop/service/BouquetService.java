@@ -52,7 +52,7 @@ public class BouquetService {
 
     public BouquetDto findById(Long id) {
         log.debug("Поиск  букета по ID: {}", id);
-        Bouquet bouquet = bouquetRepository.findById(id).orElseThrow(() -> new EntityNotFoundException( "Букет с ID " + id + " не найден"));
+        Bouquet bouquet = bouquetRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Букет с ID " + id + " не найден"));
 
 
         return BouquetMapper.toDto(bouquet);
@@ -110,19 +110,14 @@ public class BouquetService {
         log.info("Начало процесса изменения букета: {}", id);
         Bouquet bouquet = findEntityById(id);
 
-        if (bouquet == null) {
-            log.warn("Букет не  найден по ID : {}", id);
-            return null;
-        }
-
         if (active) {
 
-            for (Flower flower : bouquet.getFlowers()) {
+            boolean hasInactiveFlowers = bouquet.getFlowers().stream()
+                    .anyMatch(flower -> !flower.isActive());
 
-                if (!flower.isActive()) {
-
-                    return BouquetMapper.toDto(bouquet);
-                }
+            if (hasInactiveFlowers) {
+                log.warn("Нельзя активировать букет {}, так как в нем есть неактивные цветы", id);
+                return BouquetMapper.toDto(bouquet);
             }
         }
 

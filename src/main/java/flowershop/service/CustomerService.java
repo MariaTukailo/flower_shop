@@ -14,9 +14,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -30,21 +32,20 @@ public class CustomerService {
     private final CustomerHashMap hashMap;
 
     private Customer findEntityById(Long id) {
-        return customerRepository.findById(id).orElse(null);
+        return customerRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Покупатель с ID " + id + " не найден"));
     }
 
     public List<CustomerDto> findAll() {
-        log.debug("Поиск всех покупателей ");
-        List<Customer> customers = customerRepository.findAll();
-        return customers.stream()
+        log.debug("Поиск всех покупателей");
+        return customerRepository.findAll().stream()
                 .map(CustomerMapper::toDto)
                 .toList();
     }
 
     public CustomerDto findById(Long id) {
         log.debug("Поиск  покупателей по ID : {} ", id);
-        Customer customer = findEntityById(id);
-        return CustomerMapper.toDto(customer);
+        return CustomerMapper.toDto(findEntityById(id));
     }
 
     @Transactional

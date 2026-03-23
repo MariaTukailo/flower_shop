@@ -9,12 +9,15 @@ import flowershop.enums.OrderStatus;
 import flowershop.mapper.OrderMapper;
 import flowershop.repository.OrderRepository;
 import flowershop.repository.ShoppingCartRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import flowershop.entity.Customer;
 import flowershop.repository.CustomerRepository;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,6 +25,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -34,9 +38,8 @@ public class OrderService {
     private final CustomerHashMap hashMap;
 
     private Order findEntityById(Long id) {
-
-        log.debug("Поиск сущности заказа  по ID {}", id);
-        return orderRepository.findById(id).orElse(null);
+        return orderRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Заказ не найден"));
     }
 
     public List<OrderDto> findAll() {
@@ -60,33 +63,29 @@ public class OrderService {
         log.info("Начало сохранения заказа пользователя под id {}", customerId);
 
         log.debug("проверка на пустоту даты и времени");
-        if (deliveryDate == null || deliveryTime == null) {
-            log.warn("Дата или время пустое. заказ не создан");
-            return null;
-        }
+        Optional.ofNullable(deliveryDate).orElseThrow(() -> new IllegalArgumentException("Дата доставки обязательна"));
+        Optional.ofNullable(deliveryTime).orElseThrow(() -> new IllegalArgumentException("Время доставки обязательно"));
 
         log.debug("Поиск по id покупателя , делающего заказ , с id : {}", customerId);
-        Customer customer = customerRepository.findById(customerId).orElse(null);
-        log.debug("проверка на пустоту покупателя и корзины");
-        if (customer == null || customer.getCart() == null) {
-            log.warn("Покупатель или корзина  пустые. заказ не создан");
-            return null;
-        }
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new EntityNotFoundException("Покупатель не найден"));
 
-        ShoppingCart cart = customer.getCart();
+
+        log.debug("проверка на пустоту покупателя и корзины");
+        ShoppingCart cart = Optional.ofNullable(customer.getCart())
+                .orElseThrow(() -> new IllegalStateException("У покупателя нет корзины"));
+
+
         List<Bouquet> bouquetsInCart = cart.getBouquets();
 
         if (bouquetsInCart == null || bouquetsInCart.isEmpty()) {
-            return null;
+            throw new IllegalStateException("Корзина пуста");
         }
 
-        for (Bouquet bouquet : bouquetsInCart) {
-            if (!bouquet.isActive()) {
-
-                return null;
-            }
+        boolean hasInactive = bouquetsInCart.stream().anyMatch(b -> !b.isActive());
+        if (hasInactive) {
+            throw new IllegalStateException("В корзине есть неактивные букеты");
         }
-
 
         Order order = new Order();
         order.setCustomer(customer);
@@ -97,10 +96,11 @@ public class OrderService {
 
         order.setBouquets(new ArrayList<>(bouquetsInCart));
 
-        double total = 0;
-        for (Bouquet bouquet : bouquetsInCart) {
-            total += bouquet.getPrice();
-        }
+        double total = bouquetsInCart.stream()
+                .mapToDouble(Bouquet::getPrice)
+                .sum();
+
+
         order.setFinalPrice(total);
 
         cart.getBouquets().clear();
@@ -120,10 +120,8 @@ public class OrderService {
         Order order = findEntityById(id);
 
 
-        OrderStatus newStatus = OrderStatus.fromString(statusValue);
-        if (newStatus != null) {
-            order.setStatus(newStatus);
-        }
+        OrderStatus newStatus = Optional.ofNullable(OrderStatus.fromString(statusValue))
+                .orElseThrow(() -> new IllegalArgumentException("Некорректный статус: " + statusValue));
 
         hashMap.clear();
         OrderDto updateOrder = OrderMapper.toDto(orderRepository.save(order));

@@ -35,7 +35,6 @@ public class CustomerController {
         return customerService.findAll();
     }
 
-
     @Operation(summary = "Найти покупателя по ID ", description = "Возвращает найденного покупателя ")
     @GetMapping("/{id}")
     public CustomerDto findById(@PathVariable Long id) {

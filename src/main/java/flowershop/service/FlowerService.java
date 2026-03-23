@@ -3,11 +3,13 @@ package flowershop.service;
 import flowershop.components.CustomerHashMap;
 import flowershop.dto.FlowerDto;
 import flowershop.enums.Color;
+import flowershop.exception.TransactionDemoException;
 import flowershop.mapper.FlowerMapper;
 import flowershop.entity.Bouquet;
 import flowershop.entity.Flower;
 import flowershop.repository.FlowerRepository;
 import flowershop.repository.BouquetRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,49 @@ public class FlowerService {
         return flowerRepository.findById(id).orElse(null);
     }
 
+    @Transactional
+    public List<FlowerDto> saveAll(List<FlowerDto> dto) {
+
+        List<Flower> entities = dto.stream()
+                .map(FlowerMapper::toEntity)
+                .toList();
+
+
+        List<Flower> savedEntities = flowerRepository.saveAll(entities);
+
+
+        return savedEntities.stream()
+                .map(FlowerMapper::toDto)
+                .toList();
+    }
+
+
+    public List<FlowerDto> saveAllNotTransactional(List<FlowerDto> dto) {
+
+        List<Flower> entities = dto.stream()
+                .map(FlowerMapper::toEntity)
+                .toList();
+
+
+        List<Flower> savedEntities = flowerRepository.saveAll(entities);
+
+        throw new TransactionDemoException("Тест: Ошибка БЕЗ @Transactional.");
+    }
+
+    @Transactional
+    public List<FlowerDto> saveAllTransactional(List<FlowerDto> dto) {
+
+        List<Flower> entities = dto.stream()
+                .map(FlowerMapper::toEntity)
+                .toList();
+
+
+        List<Flower> savedEntities = flowerRepository.saveAll(entities);
+
+
+        throw new TransactionDemoException("Тест: Ошибка с @Transactional.");
+    }
+
     public List<FlowerDto> findAll() {
         log.debug("Поиск всех цветов ");
         List<Flower> flowers = flowerRepository.findAll();
@@ -39,12 +84,10 @@ public class FlowerService {
     }
 
     public FlowerDto findById(Long id) {
-        log.debug("Поиск  цветка по ID  {}", id);
-        Flower flower = flowerRepository.findById(id).orElse(null);
-        if (flower == null) {
-            log.warn("Цветок  по ID не найден {}", id);
-            return null;
-        }
+        log.debug("Поиск  цветка по ID {}", id);
+
+        Flower flower = flowerRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Цветок с ID " + id + " не найден"));
 
         return FlowerMapper.toDto(flower);
     }
