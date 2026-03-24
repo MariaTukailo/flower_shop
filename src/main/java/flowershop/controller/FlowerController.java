@@ -1,7 +1,6 @@
 package flowershop.controller;
 
 import flowershop.dto.FlowerDto;
-import flowershop.entity.Flower;
 import flowershop.service.FlowerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

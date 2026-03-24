@@ -103,35 +103,54 @@ class OrderServiceTest {
 
     @Test
     void createFromCart_NullDateTime() {
-        assertThrows(IllegalArgumentException.class, () -> orderService.createFromCart(1L, null, LocalTime.now()));
-        assertThrows(IllegalArgumentException.class, () -> orderService.createFromCart(1L, LocalDate.now(), null));
+        LocalDate date = LocalDate.now();
+        LocalTime time = LocalTime.now();
+
+        assertThrows(IllegalArgumentException.class, () ->
+                orderService.createFromCart(1L, null, time)
+        );
+
+        assertThrows(IllegalArgumentException.class, () ->
+                orderService.createFromCart(1L, date, null)
+        );
     }
 
     @Test
     void createFromCart_CustomerNotFound() {
-        when(customerRepository.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> orderService.createFromCart(1L, LocalDate.now(), LocalTime.now()));
-    }
+        LocalDate date = LocalDate.now();
+        LocalTime time = LocalTime.now();
 
-    @Test
-    void createFromCart_NoCart() {
-        customer.setCart(null);
-        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
-        assertThrows(IllegalStateException.class, () -> orderService.createFromCart(1L, LocalDate.now(), LocalTime.now()));
+        when(customerRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () ->
+                orderService.createFromCart(1L, date, time)
+        );
     }
 
     @Test
     void createFromCart_EmptyCart() {
+        LocalDate date = LocalDate.now();
+        LocalTime time = LocalTime.now();
         cart.getBouquets().clear();
+
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
-        assertThrows(IllegalStateException.class, () -> orderService.createFromCart(1L, LocalDate.now(), LocalTime.now()));
+
+        assertThrows(IllegalStateException.class, () ->
+                orderService.createFromCart(1L, date, time)
+        );
     }
 
     @Test
     void createFromCart_InactiveBouquets() {
+        LocalDate date = LocalDate.now();
+        LocalTime time = LocalTime.now();
         bouquet.setActive(false);
+
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
-        assertThrows(IllegalStateException.class, () -> orderService.createFromCart(1L, LocalDate.now(), LocalTime.now()));
+
+        assertThrows(IllegalStateException.class, () ->
+                orderService.createFromCart(1L, date, time)
+        );
     }
 
     @Test
@@ -180,7 +199,14 @@ class OrderServiceTest {
         cart.setBouquets(null);
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
 
-        assertThrows(IllegalStateException.class, () -> orderService.createFromCart(1L, LocalDate.now(), LocalTime.now()));
+
+        LocalDate deliveryDate = LocalDate.now();
+        LocalTime deliveryTime = LocalTime.now();
+
+
+        assertThrows(IllegalStateException.class, () ->
+                orderService.createFromCart(1L, deliveryDate, deliveryTime)
+        );
     }
 
     @Test

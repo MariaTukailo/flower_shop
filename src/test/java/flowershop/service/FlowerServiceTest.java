@@ -66,12 +66,16 @@ class FlowerServiceTest {
 
     @Test
     void saveAllNotTransactional_ThrowsException() {
-        assertThrows(TransactionDemoException.class, () -> flowerService.saveAllNotTransactional(List.of(flowerDto)));
+
+        List<FlowerDto> dto = List.of(flowerDto);
+        assertThrows(TransactionDemoException.class, () -> flowerService.saveAllNotTransactional(dto));
     }
 
     @Test
     void saveAllTransactional_ThrowsException() {
-        assertThrows(TransactionDemoException.class, () -> flowerService.saveAllTransactional(List.of(flowerDto)));
+
+        List<FlowerDto> dto = List.of(flowerDto);
+        assertThrows(TransactionDemoException.class, () -> flowerService.saveAllTransactional(dto));
     }
 
     @Test

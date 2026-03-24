@@ -55,7 +55,7 @@ public class FlowerService {
                 .toList();
 
 
-        List<Flower> savedEntities = flowerRepository.saveAll(entities);
+        flowerRepository.saveAll(entities);
 
         throw new TransactionDemoException("Тест: Ошибка БЕЗ @Transactional.");
     }
@@ -68,7 +68,7 @@ public class FlowerService {
                 .toList();
 
 
-        List<Flower> savedEntities = flowerRepository.saveAll(entities);
+        flowerRepository.saveAll(entities);
 
 
         throw new TransactionDemoException("Тест: Ошибка с @Transactional.");

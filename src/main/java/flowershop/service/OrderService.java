@@ -119,8 +119,7 @@ public class OrderService {
         log.debug("Поиск заказа по ID: {}", id);
         Order order = findEntityById(id);
 
-
-        OrderStatus newStatus = Optional.ofNullable(OrderStatus.fromString(statusValue))
+        Optional.ofNullable(OrderStatus.fromString(statusValue))
                 .orElseThrow(() -> new IllegalArgumentException("Некорректный статус: " + statusValue));
 
         hashMap.clear();
