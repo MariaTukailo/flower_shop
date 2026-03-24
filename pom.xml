@@ -91,6 +91,19 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/dto/**</exclude>
+                                <exclude>**/entity/**</exclude>
+                                <exclude>**/enums/**</exclude>
+                                <exclude>**/exception/**</exclude>
+                                <exclude>**/controller/**</exclude>
+                                <exclude>**/repository/**</exclude>
+                                <exclude>**/aspect/**</exclude>
+                                <exclude>**/mapper/**</exclude>
+                                <exclude>**/flowershop/FlowershopApplication.class</exclude>
+                            </excludes>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
