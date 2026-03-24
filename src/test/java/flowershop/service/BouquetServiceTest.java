@@ -115,7 +115,7 @@ class BouquetServiceTest {
         flower.setActive(false); // В букете неактивный цветок
         when(bouquetRepository.findById(1L)).thenReturn(Optional.of(bouquet));
 
-        bouquetService.updateStatus(3L, true);
+        bouquetService.updateStatus(1L, true);
 
         assertTrue(bouquet.isActive()); // Статус не изменился бы, если бы был false
         verify(bouquetRepository, never()).save(any());
