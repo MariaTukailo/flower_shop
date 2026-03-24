@@ -137,4 +137,56 @@ class BouquetServiceTest {
         when(bouquetRepository.findById(1L)).thenReturn(Optional.empty());
         assertThrows(ResponseStatusException.class, () -> bouquetService.updateStatus(1L, true));
     }
+
+    @Test
+    void create_EmptyOrInactiveFlowers_PriceIsZero() {
+        Flower inactiveFlower = new Flower();
+        inactiveFlower.setId(99L);
+        inactiveFlower.setActive(false);
+        inactiveFlower.setPrice(100.0);
+
+        FlowerDto f1 = new FlowerDto();
+        f1.setId(99L);
+
+        BouquetDto dto = new BouquetDto();
+        dto.setName("Пустой букет");
+        dto.setFlowers(List.of(f1));
+
+        when(flowerRepository.findAllById(any())).thenReturn(List.of(inactiveFlower));
+        when(bouquetRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+
+        BouquetDto result = bouquetService.create(dto);
+
+        assertEquals(0.0, result.getPrice());
+        assertTrue(result.getFlowers().isEmpty());
+    }
+
+    @Test
+    void updateStatus_SetActive_Success_AllFlowersActive() {
+        bouquet.setActive(false);
+        flower.setActive(true);
+
+        when(bouquetRepository.findById(1L)).thenReturn(Optional.of(bouquet));
+        when(bouquetRepository.save(any())).thenReturn(bouquet);
+
+        BouquetDto result = bouquetService.updateStatus(1L, true);
+
+        assertTrue(result.isActive());
+        verify(bouquetRepository).save(bouquet);
+    }
+
+    @Test
+    void findAllActive_FiltersCorrectl() {
+        Bouquet b1 = new Bouquet();
+        b1.setActive(true);
+        Bouquet b2 = new Bouquet();
+        b2.setActive(false);
+
+        when(bouquetRepository.findAll()).thenReturn(List.of(b1, b2));
+
+        List<BouquetDto> result = bouquetService.findAllActive();
+
+        assertEquals(1, result.size());
+        assertTrue(result.get(0).isActive());
+    }
 }
