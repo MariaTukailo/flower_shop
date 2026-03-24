@@ -189,4 +189,49 @@ class BouquetServiceTest {
         assertEquals(1, result.size());
         assertTrue(result.get(0).isActive());
     }
+
+    @Test
+    void updateStatus_SetActive_Success_EmptyFlowers() {
+
+        bouquet.setActive(false);
+        bouquet.setFlowers(new ArrayList<>());
+
+        when(bouquetRepository.findById(1L)).thenReturn(Optional.of(bouquet));
+        when(bouquetRepository.save(any())).thenReturn(bouquet);
+
+        BouquetDto result = bouquetService.updateStatus(1L, true);
+
+        assertTrue(result.isActive());
+        verify(bouquetRepository).save(bouquet);
+    }
+
+    @Test
+    void updateStatus_SetInactive_AlreadyInactive() {
+
+        bouquet.setActive(false);
+
+        when(bouquetRepository.findById(1L)).thenReturn(Optional.of(bouquet));
+        when(bouquetRepository.save(any())).thenReturn(bouquet);
+
+        BouquetDto result = bouquetService.updateStatus(1L, false);
+
+        assertFalse(result.isActive());
+        verify(bouquetRepository).save(bouquet);
+    }
+
+    @Test
+    void create_WithNullFlowersList() {
+
+        BouquetDto dto = new BouquetDto();
+        dto.setName("Null Flowers");
+        dto.setFlowers(new ArrayList<>());
+
+        when(flowerRepository.findAllById(any())).thenReturn(new ArrayList<>());
+        when(bouquetRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+
+        BouquetDto result = bouquetService.create(dto);
+
+        assertEquals(0.0, result.getPrice());
+        verify(bouquetRepository).save(any());
+    }
 }
