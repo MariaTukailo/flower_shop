@@ -153,4 +153,55 @@ class OrderServiceTest {
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
         assertThrows(IllegalArgumentException.class, () -> orderService.updateStatus(1L, "INVALID"));
     }
+
+    @Test
+    void createFromCart_PriceCalculationWithMultipleBouquets() {
+        Bouquet bouquet2 = new Bouquet();
+        bouquet2.setId(2L);
+        bouquet2.setPrice(150.0);
+        bouquet2.setActive(true);
+        cart.getBouquets().add(bouquet2);
+
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+
+        when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> {
+            Order savedOrder = invocation.getArgument(0);
+            assertEquals(250.0, savedOrder.getFinalPrice());
+            return savedOrder;
+        });
+
+        orderService.createFromCart(1L, LocalDate.now(), LocalTime.now());
+
+        verify(orderRepository).save(any(Order.class));
+    }
+
+    @Test
+    void createFromCart_CartWithNullBouquetsList() {
+        cart.setBouquets(null);
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+
+        assertThrows(IllegalStateException.class, () -> orderService.createFromCart(1L, LocalDate.now(), LocalTime.now()));
+    }
+
+    @Test
+    void updateStatus_StatusCaseInsensitive() {
+        Order order = new Order();
+        order.setId(1L);
+        order.setStatus(OrderStatus.CANCELLED);
+
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        when(orderRepository.save(any(Order.class))).thenReturn(order);
+
+        OrderDto result = orderService.updateStatus(1L, "processing");
+
+        assertNotNull(result);
+        verify(orderRepository).save(argThat(o -> o.getStatus() == OrderStatus.PROCESSING));
+    }
+
+    @Test
+    void updateStatus_NotFound() {
+        when(orderRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ResponseStatusException.class, () -> orderService.updateStatus(1L, "COMPLETED"));
+    }
 }

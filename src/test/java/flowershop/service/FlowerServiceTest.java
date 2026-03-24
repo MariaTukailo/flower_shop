@@ -167,4 +167,72 @@ class FlowerServiceTest {
 
         verify(bouquetRepository, never()).findAllWithFlowers();
     }
+
+    @Test
+    void update_PriceChanged_BouquetFlowersNull() {
+        flowerDto.setPrice(20.0);
+        Bouquet bouquet = new Bouquet();
+        bouquet.setPrice(100.0);
+        bouquet.setFlowers(null);
+
+        when(flowerRepository.findById(1L)).thenReturn(Optional.of(flower));
+        when(bouquetRepository.findAllWithFlowers()).thenReturn(List.of(bouquet));
+        when(flowerRepository.save(any())).thenReturn(flower);
+
+        FlowerDto result = flowerService.update(1L, flowerDto);
+
+        assertEquals(20.0, result.getPrice());
+        assertEquals(100.0, bouquet.getPrice());
+    }
+
+    @Test
+    void update_PriceChanged_BouquetDoesNotContainFlower() {
+        flowerDto.setPrice(20.0);
+        Flower otherFlower = new Flower();
+        otherFlower.setId(2L);
+
+        Bouquet bouquet = new Bouquet();
+        bouquet.setPrice(100.0);
+        bouquet.setFlowers(new ArrayList<>(List.of(otherFlower)));
+
+        when(flowerRepository.findById(1L)).thenReturn(Optional.of(flower));
+        when(bouquetRepository.findAllWithFlowers()).thenReturn(List.of(bouquet));
+        when(flowerRepository.save(any())).thenReturn(flower);
+
+        flowerService.update(1L, flowerDto);
+
+        assertEquals(100.0, bouquet.getPrice());
+    }
+
+    @Test
+    void updateStatus_SetInactive_BouquetFlowersNull() {
+        Bouquet bouquet = new Bouquet();
+        bouquet.setActive(true);
+        bouquet.setFlowers(null);
+
+        when(flowerRepository.findById(1L)).thenReturn(Optional.of(flower));
+        when(bouquetRepository.findAllWithFlowers()).thenReturn(List.of(bouquet));
+        when(flowerRepository.save(any())).thenReturn(flower);
+
+        flowerService.updateStatus(1L, false);
+
+        assertTrue(bouquet.isActive());
+    }
+
+    @Test
+    void updateStatus_SetInactive_BouquetDoesNotContainFlower() {
+        Flower otherFlower = new Flower();
+        otherFlower.setId(2L);
+        Bouquet bouquet = new Bouquet();
+        bouquet.setActive(true);
+        bouquet.setFlowers(new ArrayList<>(List.of(otherFlower)));
+
+        when(flowerRepository.findById(1L)).thenReturn(Optional.of(flower));
+        when(bouquetRepository.findAllWithFlowers()).thenReturn(List.of(bouquet));
+        when(flowerRepository.save(any())).thenReturn(flower);
+
+        flowerService.updateStatus(1L, false);
+
+        assertTrue(bouquet.isActive());
+    }
 }
