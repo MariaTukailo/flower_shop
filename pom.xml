@@ -104,6 +104,8 @@
                                 <exclude>**/repository/**</exclude>
                                 <exclude>**/aspect/**</exclude>
                                 <exclude>**/mapper/**</exclude>
+                                <exclude>**/asyncservice/**</exclude>
+                                <exclude>**/config/**</exclude>
                                 <exclude>**/components/**</exclude> <exclude>**/flowershop/FlowershopApplication.class</exclude>
                             </excludes>
                         </configuration>
