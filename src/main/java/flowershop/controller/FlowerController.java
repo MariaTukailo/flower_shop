@@ -29,6 +29,7 @@ public class FlowerController {
 
     private final FlowerService flowerService;
 
+
     @Operation(summary = "Получить все цветы ", description = "Возвращает список всех цветов ")
     @GetMapping
     public List<FlowerDto> findAll() {
@@ -47,7 +48,6 @@ public class FlowerController {
     public FlowerDto findById(@PathVariable Long id) {
         return flowerService.findById(id);
     }
-
 
     @Operation(summary = "Создать цветы (bulk)", description = "Создает цветы (bulk)")
     @PostMapping("/bulk")
