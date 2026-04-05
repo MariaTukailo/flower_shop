@@ -9,6 +9,7 @@ import flowershop.enums.OrderStatus;
 import flowershop.exception.TransactionDemoException;
 import flowershop.mapper.CustomerMapper;
 import flowershop.repository.CustomerRepository;
+import flowershop.repository.ShoppingCartRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -28,6 +30,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CustomerService {
 
+    private final ShoppingCartRepository shoppingCartRepository;
     private final CustomerRepository customerRepository;
     private final CustomerHashMap hashMap;
 
@@ -49,24 +52,33 @@ public class CustomerService {
     }
 
     @Transactional
-    public CustomerDto createTransactional(CustomerDto dto) {
-        log.info("Начало сохранения покупателя под id {}", dto.getId());
-        Customer customer = customerRepository.save(CustomerMapper.toEntity(dto));
+    public CustomerDto create(CustomerDto dto) {
+        log.info("--- ПРИНУДИТЕЛЬНОЕ СОЗДАНИЕ КОРЗИНЫ ---");
 
-        log.debug("Создание корзины покупателя с ID : {} ", dto.getId());
-        ShoppingCart cart = new ShoppingCart();
-        cart.setCustomer(customer);
-        cart.setId(customer.getId());
 
-        customer.setCart(cart);
-        log.info("Корзина покупателя успешно сохранен в БД под ID: {}", cart.getId());
-        hashMap.clear();
+        ShoppingCart newCart = new ShoppingCart();
+        newCart.setBouquets(new ArrayList<>());
 
-        CustomerDto save = CustomerMapper.toDto(customerRepository.save(customer));
-        log.info("Покупатель успешно сохранен в БД под ID: {}", save.getId());
-        return save;
+
+        newCart = shoppingCartRepository.saveAndFlush(newCart);
+        log.info("Корзина создана в базе! ID корзины: {}", newCart.getId());
+
+
+        Customer customer = new Customer();
+        customer.setName(dto.getName());
+        customer.setPhoneNumber(dto.getPhoneNumber());
+
+
+        customer.setCart(newCart);
+
+
+        Customer savedCustomer = customerRepository.saveAndFlush(customer);
+
+        log.info("Покупатель создан! ID: {}, привязан к cart_id: {}",
+                savedCustomer.getId(), newCart.getId());
+
+        return CustomerMapper.toDto(savedCustomer);
     }
-
     public CustomerDto createWithoutTransaction(CustomerDto dto) {
         Customer customer = customerRepository.save(CustomerMapper.toEntity(dto));
 
@@ -127,7 +139,7 @@ public class CustomerService {
 
     public Page<CustomerDto> findByFlower(String flowerName, LocalDate date, int page, int size) {
         log.info("Начало поиска покупателей имеющих активные заказы, в которых содержится определенный цветок");
-        List<String> orderStatuses = List.of(OrderStatus.PROCESSING.name(), OrderStatus.ACCEPTED.name());
+        List<String> orderStatuses = List.of(OrderStatus.PROCESSING.name(), OrderStatus.SHIPPING.name());
         Pageable pageable = PageRequest.of(page, size, Sort.by("o.deliveryDate").descending());
 
         log.debug("Создание ключа");
@@ -154,7 +166,7 @@ public class CustomerService {
     public Page<CustomerDto> findByFlowerNative(String flowerName, LocalDate date, int page, int size) {
         log.info("Начало поиска покупателей имеющих активные заказы,  в которых содержится определенный цветок");
         Pageable pageable = PageRequest.of(page, size, Sort.by("o.delivery_date").descending());
-        List<String> orderStatuses = List.of(OrderStatus.PROCESSING.name(), OrderStatus.ACCEPTED.name());
+        List<String> orderStatuses = List.of(OrderStatus.PROCESSING.name(), OrderStatus.SHIPPING.name());
 
         log.debug("Создание  ключа");
         SearchKey key = new SearchKey(flowerName, orderStatuses, date, page, size);
@@ -176,4 +188,8 @@ public class CustomerService {
         log.info("Конец  поиска покупателей имеющих активные заказы, в которых содержится определенный цветок");
         return customersDto;
     }
+
+
+
+
 }

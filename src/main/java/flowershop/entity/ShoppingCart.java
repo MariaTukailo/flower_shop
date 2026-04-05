@@ -9,7 +9,6 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,10 +26,9 @@ public class ShoppingCart {
     @Id
     private Long id;
 
-
     @OneToOne
     @MapsId
-    @JoinColumn(name = "customer_id")
+    @JoinColumn(name = "customer_id") //
     private Customer customer;
 
     @ManyToMany(fetch = FetchType.EAGER)

@@ -23,6 +23,7 @@ public class BouquetMapper {
         dto.setId(bouquet.getId());
         dto.setName(bouquet.getName());
         dto.setActive(bouquet.isActive());
+        dto.setPathPhoto(bouquet.getPathPhoto());
         dto.setPrice(bouquet.getPrice());
         dto.setWrappingPaper(bouquet.isWrappingPaper());
         dto.setRibbon(bouquet.isRibbon());
@@ -47,6 +48,7 @@ public class BouquetMapper {
         bouquet.setId(dto.getId());
         bouquet.setPrice(dto.getPrice());
         bouquet.setName(dto.getName());
+        bouquet.setPathPhoto(dto.getPathPhoto());
         bouquet.setActive(dto.isActive());
         bouquet.setWrappingPaper(dto.isWrappingPaper());
         bouquet.setRibbon(dto.isRibbon());

@@ -135,6 +135,7 @@ public class FlowerService {
             }
         }
 
+        flower.setPathPhoto(dto.getPathPhoto());
         flower.setName(dto.getName());
         flower.setActive(dto.isActive());
         flower.setPrice(dto.getPrice());

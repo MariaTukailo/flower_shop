@@ -19,7 +19,6 @@ import lombok.NoArgsConstructor;
 public class BouquetDto {
 
     @Schema(description = "Уникальный идентификатор", example = "1")
-    @NotNull()
     private Long id;
 
     @Schema(description = "Название букета", example = "Весенний")
@@ -43,6 +42,9 @@ public class BouquetDto {
     @Schema(description = "Наличие ленты", example = "true")
     @NotNull(message = "Укажите, используется  ли лента в букете (true/false)")
     private boolean ribbon;
+
+    @Schema(description = "Путь к фото")
+    private String pathPhoto;
 
     @Schema(description = "Количество цветов", example = "11")
     @NotNull(message = "Укажите количество цветов")

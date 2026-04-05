@@ -3,12 +3,14 @@ package flowershop.controller;
 import flowershop.dto.OrderDto;
 import flowershop.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +27,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/orders")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173")
 @Validated
 public class OrderController {
 
@@ -52,7 +55,8 @@ public class OrderController {
             @FutureOrPresent(message = "Дата доставки не может быть в прошлом")LocalDate deliveryDate,
 
             @RequestParam
-            @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
+            @DateTimeFormat(pattern = "HH:mm")
+            @io.swagger.v3.oas.annotations.Parameter(schema = @Schema(type = "string", format = "time", example = "14:30"))
             LocalTime deliveryTime,
 
             @RequestParam String address) {

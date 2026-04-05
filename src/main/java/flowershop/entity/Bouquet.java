@@ -29,6 +29,7 @@ public class Bouquet {
     private boolean active;
     private String name;
     private double price;
+    private String pathPhoto;
     private boolean wrappingPaper;
     private boolean ribbon;
     private int countFlowers;

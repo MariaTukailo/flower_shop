@@ -33,6 +33,9 @@ public class FlowerDto {
     @NotNull(message = "Укажите цену")
     private double price;
 
+    @Schema(description = "Путь к фото")
+    private String pathPhoto;
+
     @Schema(description = "Цвет", example = "красный")
     @NotNull(message = "Цвет не указан или указан некорректно. Доступные цвета: белый, желтый, розовый, красный, зеленый, черный")
     private String color;

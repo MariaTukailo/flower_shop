@@ -11,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,9 +29,18 @@ public class Customer {
     private String name;
     private String phoneNumber;
 
+
     @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private ShoppingCart cart;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders = new ArrayList<>();
+
+
+    public void setCart(ShoppingCart cart) {
+        this.cart = cart;
+        if (cart != null) {
+            cart.setCustomer(this);
+        }
+    }
 }

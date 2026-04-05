@@ -4,10 +4,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum OrderStatus {
     PROCESSING("Обработка"),
-    ACCEPTED("Принят"),
-    IN_TRANSIT("В пути"),
-    CANCELLED("Отменен"),
-    DELIVERED("Доставлен");
+    SHIPPING("Принят"),
+    DELIVERED("Доставлен"),
+    CANCELLED("Отменен");
 
     private final String russianName;
 

@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/customers")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173")
 public class CustomerController {
 
     private final CustomerService customerService;
@@ -45,7 +47,7 @@ public class CustomerController {
     @PostMapping
     public CustomerDto create(@Valid @RequestBody CustomerDto dto) {
 
-        return customerService.createTransactional(dto);
+        return customerService.create(dto);
     }
 
     @Operation(summary = "Изменить покупателя ", description = "Изменяет параметры определенного покупателя ")

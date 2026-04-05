@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -34,7 +35,11 @@ public class OrderDto {
 
     @NotNull(message = "Время доставки обязательно")
     @JsonFormat(pattern = "HH:mm")
-    @Schema(description = "Время доставки заказа", example = "14:30:00")
+    @Schema(
+            type = "string",
+            example = "14:30",
+            description = "Время доставки заказа (ЧЧ:мм)"
+    )
     private LocalTime deliveryTime;
 
     @Schema(description = "Цена заказа в рублях", example = "55")

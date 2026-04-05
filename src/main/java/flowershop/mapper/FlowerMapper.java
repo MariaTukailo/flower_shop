@@ -18,6 +18,7 @@ public class FlowerMapper {
         flowerDto.setId(flower.getId());
         flowerDto.setName(flower.getName());
         flowerDto.setActive(flower.isActive());
+        flowerDto.setPathPhoto((flower.getPathPhoto()));
         flowerDto.setPrice(flower.getPrice());
         if (flower.getColor() != null) {
             flowerDto.setColor(flower.getColor().name());
@@ -35,6 +36,7 @@ public class FlowerMapper {
         flower.setId(flowerDto.getId());
         flower.setName(flowerDto.getName());
         flower.setPrice(flowerDto.getPrice());
+        flower.setPathPhoto(flowerDto.getPathPhoto());
         flower.setActive(flowerDto.isActive());
         flower.setColor(Color.fromString(flowerDto.getColor()));
 

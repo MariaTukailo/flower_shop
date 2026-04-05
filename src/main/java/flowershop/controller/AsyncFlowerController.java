@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +24,7 @@ import static flowershop.enums.TaskStatus.ACCEPTED;
 @Tag(name = "Управление цветами(асинхронные операции)", description = "Методы для работы с ассортиментом магазина (асинхронные операции)")
 @RestController
 @RequestMapping("/flowers/async")
+@CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 public class AsyncFlowerController {
 

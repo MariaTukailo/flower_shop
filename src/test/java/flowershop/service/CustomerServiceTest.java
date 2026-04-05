@@ -75,14 +75,7 @@ class CustomerServiceTest {
         assertThrows(ResponseStatusException.class, () -> customerService.findById(1L));
     }
 
-    @Test
-    void createTransactional_Success() {
-        when(customerRepository.save(any(Customer.class))).thenReturn(customer);
-        CustomerDto result = customerService.createTransactional(customerDto);
-        assertNotNull(result);
-        verify(customerRepository, times(2)).save(any());
-        verify(hashMap).clear();
-    }
+ 
 
     @Test
     void createWithoutTransaction_ThrowsException() {

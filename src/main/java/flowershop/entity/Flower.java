@@ -36,6 +36,7 @@ public class Flower {
     private String name;
     private double price;
     private boolean active;
+    private String pathPhoto;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)

@@ -58,3 +58,10 @@ build/
 ### VS Code ###
 .vscode/
 >>>>>>> 53329f1 (the first laboratory)
+
+*.log
+*.log.gz
+
+
+logs/
+../logs/
