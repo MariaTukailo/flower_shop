@@ -228,9 +228,7 @@ class CustomerServiceTest {
 
     @Test
     void findByFlower_FromCache() {
-        Pageable pageable = PageRequest.of(0, 10);
         Page<CustomerDto> cachedPage = new PageImpl<>(List.of(customerDto));
-        SearchKey expectedKey = any(SearchKey.class);
 
         when(hashMap.containsKey(any(SearchKey.class))).thenReturn(true);
         when(hashMap.get(any(SearchKey.class))).thenReturn(cachedPage);

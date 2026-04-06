@@ -29,7 +29,7 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
 
         if (!user.getPassword().equals(request.getPassword())) {
-            throw new RuntimeException("Неверный пароль");
+            throw new IllegalArgumentException("Неверный пароль");
         }
 
         AuthResponse response = new AuthResponse();

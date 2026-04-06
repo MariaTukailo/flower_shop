@@ -179,15 +179,15 @@ class UserServiceTest {
     @Test
     void register_WithEmptyCart() {
         when(shoppingCartRepository.save(any(ShoppingCart.class))).thenAnswer(invocation -> {
-            ShoppingCart cart = invocation.getArgument(0);
-            cart.setId(3L);
-            return cart;
+            ShoppingCart newShoppingCart = invocation.getArgument(0);
+            newShoppingCart.setId(3L);
+            return newShoppingCart;
         });
 
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
-            User userToSave = invocation.getArgument(0);
-            userToSave.setId(3L);
-            return userToSave;
+            User newUser = invocation.getArgument(0);
+            newUser.setId(3L);
+            return newUser;
         });
 
         AuthResponse response = userService.register(registrationRequest);
