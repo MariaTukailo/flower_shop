@@ -66,11 +66,11 @@ public class BouquetController {
         return bouquetService.updateStatus(id, active);
     }
 
-    // В контроллере измени метод на этот:
+
     @Operation(summary = "Частичное обновление букета", description = "Изменяет только статус, стоимость и путь к фотографии")
     @PatchMapping("/{id}")
     public BouquetDto updatePartial(@PathVariable Long id, @RequestBody BouquetDto dto) {
-        // Извлекаем значения из DTO, которое пришло в теле запроса
+
         return bouquetService.updatePartial(id, dto.isActive(), dto.getPrice(), dto.getPathPhoto());
     }
 }

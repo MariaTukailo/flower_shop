@@ -128,11 +128,11 @@ public class BouquetService {
 
     @Transactional
     public BouquetDto updatePartial(Long id, Boolean active, Double price, String pathPhoto) {
-        // 1. Ищем букет в базе
-        Bouquet bouquet = bouquetRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Букет с ID " + id + " не найден"));
 
-        // 2. Обновляем только присланные поля
+        Bouquet bouquet = bouquetRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Букет с ID " + id + " не   найден"));
+
+
         if (active != null) {
             bouquet.setActive(active);
         }
@@ -143,7 +143,7 @@ public class BouquetService {
             bouquet.setPathPhoto(pathPhoto);
         }
 
-        // 3. Сохраняем изменения и возвращаем обновленный DTO
+
         Bouquet savedBouquet = bouquetRepository.save(bouquet);
         return BouquetMapper.toDto(savedBouquet);
     }

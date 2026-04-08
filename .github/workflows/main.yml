@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  # 1. СБОРКА И ТЕСТЫ
+
   build-and-test:
     runs-on: ubuntu-latest
     steps:
@@ -27,7 +27,7 @@ jobs:
         run: mvn test
         continue-on-error: true
 
-  # 2. РАЗВЕРТЫВАНИЕ (DEPLOY)
+
   deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
@@ -43,8 +43,7 @@ jobs:
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
-  # 3. HEALTHCHECK (ПРОВЕРКА) - ТЕПЕРЬ С ПРАВИЛЬНЫМИ ОТСТУПАМИ
-  # 3. HEALTHCHECK (ПРОВЕРКА)
+
   healthcheck:
     needs: deploy
     runs-on: ubuntu-latest

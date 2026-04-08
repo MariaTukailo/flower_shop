@@ -58,7 +58,6 @@ class BouquetServiceTest {
         bouquet.setFlowers(new ArrayList<>(List.of(flower)));
     }
 
-    // --- ТЕСТЫ НА ПОИСК (READ) ---
 
     @Test
     void findAll_Success() {
@@ -102,7 +101,7 @@ class BouquetServiceTest {
         verify(bouquetRepository).findAllWithFlowers();
     }
 
-    // --- ТЕСТЫ НА СОЗДАНИЕ (CREATE) ---
+
 
     @Test
     void create_Success_FiltersInactiveFlowers() {
@@ -119,12 +118,12 @@ class BouquetServiceTest {
 
         BouquetDto result = bouquetService.create(inputDto);
 
-        assertEquals(200.0, result.getPrice()); // Цена из DTO
-        assertEquals(1, result.getFlowers().size()); // Только активный цветок
+        assertEquals(200.0, result.getPrice());
+        assertEquals(1, result.getFlowers().size());
         assertTrue(result.isActive());
     }
 
-    // --- ТЕСТЫ НА СТАТУС (UPDATE STATUS) ---
+
 
     @Test
     void updateStatus_ToActive_Success() {
@@ -140,25 +139,23 @@ class BouquetServiceTest {
 
     @Test
     void updateStatus_ToActive_Failure_InactiveFlowers() {
-        // 1. Создаем неактивный цветок
+
         Flower inactiveF = new Flower();
         inactiveF.setId(10L);
         inactiveF.setActive(false);
 
-        // 2. Кладем его в букет и ставим статус букета false
+
         bouquet.setActive(false);
         bouquet.setFlowers(new ArrayList<>(List.of(inactiveF)));
 
-        // 3. Настраиваем мок на поиск этого букета
+
         when(bouquetRepository.findById(1L)).thenReturn(Optional.of(bouquet));
 
-        // 4. Вызываем метод (пытаемся активировать букет)
+
         BouquetDto result = bouquetService.updateStatus(1L, true);
 
-        // 5. ПРОВЕРКИ
-        // Букет НЕ должен стать активным, так как внутри есть неактивный цветок
         assertFalse(result.isActive());
-        // Метод save НЕ должен был вызваться (согласно твоей логике в сервисе)
+
         verify(bouquetRepository, never()).save(any());
     }
 
@@ -179,7 +176,6 @@ class BouquetServiceTest {
         assertThrows(ResponseStatusException.class, () -> bouquetService.updateStatus(99L, true));
     }
 
-    // --- ТЕСТЫ НА ЧАСТИЧНОЕ ОБНОВЛЕНИЕ (PATCH) ---
 
     @Test
     void updatePartial_UpdateAllFields() {
@@ -201,7 +197,7 @@ class BouquetServiceTest {
         BouquetDto result = bouquetService.updatePartial(1L, null, 300.0, null);
 
         assertEquals(300.0, result.getPrice());
-        assertTrue(result.isActive()); // Остался прежним
+        assertTrue(result.isActive());
     }
 
     @Test

@@ -28,7 +28,7 @@ public class ShoppingCart {
 
     @OneToOne
     @MapsId
-    @JoinColumn(name = "customer_id") //
+    @JoinColumn(name = "customer_id")
     private Customer customer;
 
     @ManyToMany(fetch = FetchType.EAGER)

@@ -16,11 +16,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -51,9 +51,11 @@ class CustomerServiceTest {
         testDate = LocalDate.now();
         shoppingCart = new ShoppingCart();
         shoppingCart.setId(1L);
+
         customer = new Customer();
         customer.setId(1L);
         customer.setName("Иван");
+        customer.setPhoneNumber("+375291234567");
         customer.setCart(shoppingCart);
 
         customerDto = new CustomerDto();
@@ -63,48 +65,24 @@ class CustomerServiceTest {
     }
 
     @Test
-    void update_Success() {
+    void findAll_Success() {
+        when(customerRepository.findAll()).thenReturn(List.of(customer));
+        List<CustomerDto> result = customerService.findAll();
+        assertEquals(1, result.size());
+        verify(customerRepository).findAll();
+    }
+
+    @Test
+    void findById_Success() {
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
-        when(customerRepository.save(any(Customer.class))).thenReturn(customer);
-
-        customerService.update(1L, customerDto);
-
-        verify(customerRepository).save(any(Customer.class));
-        verify(hashMap, times(1)).clear(); // Проверяем, что кэш очистился
+        CustomerDto result = customerService.findById(1L);
+        assertEquals("Иван", result.getName());
     }
 
     @Test
-    void delete_Success() {
-        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
-
-        customerService.delete(1L);
-
-        verify(customerRepository).delete(customer);
-        verify(hashMap, times(1)).clear(); // Проверяем очистку
-    }
-
-    @Test
-    void findByFlower_FromCache() {
-        Page<CustomerDto> cachedPage = new PageImpl<>(List.of(customerDto));
-        when(hashMap.containsKey(any(SearchKey.class))).thenReturn(true);
-        when(hashMap.get(any(SearchKey.class))).thenReturn(cachedPage);
-
-        Page<CustomerDto> result = customerService.findByFlower("Роза", testDate, 0, 10);
-
-        assertNotNull(result);
-        verify(customerRepository, never()).findByFlower(any(), any(), any(), any());
-    }
-
-    @Test
-    void findByFlower_FromRepository() {
-        Page<Customer> dbPage = new PageImpl<>(List.of(customer));
-        when(hashMap.containsKey(any(SearchKey.class))).thenReturn(false);
-        when(customerRepository.findByFlower(any(), any(), any(), any(Pageable.class))).thenReturn(dbPage);
-
-        customerService.findByFlower("Роза", testDate, 0, 10);
-
-        verify(customerRepository).findByFlower(any(), any(), any(), any());
-        verify(hashMap).put(any(SearchKey.class), any());
+    void findById_NotFound_ThrowsException() {
+        when(customerRepository.findById(99L)).thenReturn(Optional.empty());
+        assertThrows(ResponseStatusException.class, () -> customerService.findById(99L));
     }
 
     @Test
@@ -120,44 +98,84 @@ class CustomerServiceTest {
     }
 
     @Test
-    void findByFlower_CacheClearAfterUpdate_ShouldUseRepository() {
-        Page<Customer> dbPage = new PageImpl<>(List.of(customer));
-
-        // Первый вызов - не в кэше
-        when(hashMap.containsKey(any(SearchKey.class))).thenReturn(false);
-        when(customerRepository.findByFlower(any(), any(), any(), any())).thenReturn(dbPage);
-        customerService.findByFlower("Роза", testDate, 0, 10);
-
-        // Обновление - чистим кэш
-        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+    void createWithoutTransaction_ThrowsException() {
         when(customerRepository.save(any())).thenReturn(customer);
-        customerService.update(1L, customerDto);
-
-        // Второй вызов - опять не должно быть в кэше (так как был clear)
-        customerService.findByFlower("Роза", testDate, 0, 10);
-
-        // Итого: 2 вызова репозитория, 2 вызова clear
-        verify(customerRepository, times(2)).findByFlower(any(), any(), any(), any());
-        verify(hashMap, times(1)).clear();
+        assertThrows(TransactionDemoException.class, () -> customerService.createWithoutTransaction(customerDto));
+        verify(hashMap).clear();
     }
 
     @Test
     void createWithTransaction_ThrowsException() {
         when(customerRepository.save(any())).thenReturn(customer);
-
-        assertThrows(TransactionDemoException.class, () ->
-                customerService.createWithTransaction(customerDto)
-        );
-
+        assertThrows(TransactionDemoException.class, () -> customerService.createWithTransaction(customerDto));
         verify(hashMap).clear();
     }
 
     @Test
-    void findById_NotFound() {
-        when(customerRepository.findById(99L)).thenReturn(Optional.empty());
-        assertThrows(ResponseStatusException.class, () -> customerService.findById(99L));
+    void update_Success() {
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(customerRepository.save(any())).thenReturn(customer);
+
+        CustomerDto result = customerService.update(1L, customerDto);
+
+        assertNotNull(result);
+        verify(hashMap).clear();
+        verify(customerRepository).save(any());
     }
 
-    // Удалены дублирующиеся тесты для Native, так как логика идентична findByFlower
-    // Оставлены только ключевые проверки для чистоты файла
+    @Test
+    void delete_Success() {
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        customerService.delete(1L);
+        verify(customerRepository).delete(customer);
+        verify(hashMap).clear();
+    }
+
+
+
+    @Test
+    void findByFlower_CacheHit() {
+        when(hashMap.containsKey(any(SearchKey.class))).thenReturn(true);
+        when(hashMap.get(any(SearchKey.class))).thenReturn(new PageImpl<>(List.of(customerDto)));
+
+        Page<CustomerDto> result = customerService.findByFlower("Роза", testDate, 0, 10);
+
+        assertFalse(result.isEmpty());
+        verify(customerRepository, never()).findByFlower(any(), any(), any(), any());
+    }
+
+    @Test
+    void findByFlower_CacheMiss() {
+        when(hashMap.containsKey(any(SearchKey.class))).thenReturn(false);
+        when(customerRepository.findByFlower(any(), any(), any(), any())).thenReturn(new PageImpl<>(List.of(customer)));
+
+        customerService.findByFlower("Роза", testDate, 0, 10);
+
+        verify(customerRepository).findByFlower(any(), any(), any(), any());
+        verify(hashMap).put(any(SearchKey.class), any());
+    }
+
+
+
+    @Test
+    void findByFlowerNative_CacheHit() {
+        when(hashMap.containsKey(any(SearchKey.class))).thenReturn(true);
+        when(hashMap.get(any(SearchKey.class))).thenReturn(new PageImpl<>(List.of(customerDto)));
+
+        Page<CustomerDto> result = customerService.findByFlowerNative("Лилия", testDate, 0, 10);
+
+        assertFalse(result.isEmpty());
+        verify(customerRepository, never()).findByFlowerNative(any(), any(), any(), any());
+    }
+
+    @Test
+    void findByFlowerNative_CacheMiss() {
+        when(hashMap.containsKey(any(SearchKey.class))).thenReturn(false);
+        when(customerRepository.findByFlowerNative(any(), any(), any(), any())).thenReturn(new PageImpl<>(List.of(customer)));
+
+        customerService.findByFlowerNative("Лилия", testDate, 0, 10);
+
+        verify(customerRepository).findByFlowerNative(any(), any(), any(), any());
+        verify(hashMap).put(any(SearchKey.class), any());
+    }
 }

@@ -2,7 +2,7 @@ services:
   app:
     build: .
     container_name: flower-app
-    # Больше не зависим от контейнера db, так как идем в твой Windows
+
     ports:
       - "8080:8080"
     environment:
@@ -10,8 +10,7 @@ services:
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
-    # Эта настройка КРИТИЧНА для Windows, чтобы host.docker.internal заработал
+
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-# Блок volumes тоже можно удалить, раз мы не используем контейнерную базу
