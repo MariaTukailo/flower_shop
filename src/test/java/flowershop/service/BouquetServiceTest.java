@@ -140,12 +140,25 @@ class BouquetServiceTest {
 
     @Test
     void updateStatus_ToActive_Failure_InactiveFlowers() {
-        bouquet.setFlowers(List.of(inactiveFlower)); // В букете неактивный цветок
+        // 1. Создаем неактивный цветок
+        Flower inactiveF = new Flower();
+        inactiveF.setId(10L);
+        inactiveF.setActive(false);
+
+        // 2. Кладем его в букет и ставим статус букета false
+        bouquet.setActive(false);
+        bouquet.setFlowers(new ArrayList<>(List.of(inactiveF)));
+
+        // 3. Настраиваем мок на поиск этого букета
         when(bouquetRepository.findById(1L)).thenReturn(Optional.of(bouquet));
 
+        // 4. Вызываем метод (пытаемся активировать букет)
         BouquetDto result = bouquetService.updateStatus(1L, true);
 
-        assertFalse(result.isActive()); // Не должен измениться (остался false)
+        // 5. ПРОВЕРКИ
+        // Букет НЕ должен стать активным, так как внутри есть неактивный цветок
+        assertFalse(result.isActive());
+        // Метод save НЕ должен был вызваться (согласно твоей логике в сервисе)
         verify(bouquetRepository, never()).save(any());
     }
 
