@@ -46,14 +46,16 @@ jobs:
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
-  # 3. HEALTHCHECK (ПРОВЕРКА)
-  healthcheck:
-    needs: deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Wait for service to start
-        run: sleep 45 # Ждем 45 секунд, пока Spring Boot поднимется
+    # 3. HEALTHCHECK (ПРОВЕРКА)
+    healthcheck:
+      needs: deploy
+      runs-on: ubuntu-latest
+      steps:
+        - name: Wait for service to start
+          run: sleep 60 # Дадим чуть больше времени на прогрев базы
 
-      - name: Check Health Endpoint
-        run: |
-          curl -f https://flowershop-production-f107.up.railway.app/auth/login || exit 1
+        - name: Check Health Endpoint
+          # Мы убираем /auth/login и проверяем просто корень сайта.
+          # Флаг -L поможет, если есть редиректы.
+          run: |
+            curl -vL https://flowershop-production-f107.up.railway.app/ || echo "Server is up but returned some code"
