@@ -4,7 +4,7 @@ import './ManageOrders.css';
 
 const AdminOrders = () => {
     const [orders, setOrders] = useState([]);
-    const [customers, setCustomers] = useState({}); // Для хранения имен покупателей
+    const [customers, setCustomers] = useState({});
     const [loading, setLoading] = useState(false);
     const [filterStatus, setFilterStatus] = useState('');
     const [searchDate, setSearchDate] = useState('');
@@ -19,13 +19,13 @@ const AdminOrders = () => {
     const fetchData = async () => {
         try {
             setLoading(true);
-            // Загружаем заказы и покупателей параллельно
+
             const [ordersRes, customersRes] = await Promise.all([
                 api.get('/orders'),
                 api.get('/customers')
             ]);
 
-            // Создаем карту покупателей {id: name}
+
             const customerMap = {};
             customersRes.data.forEach(c => {
                 customerMap[c.id] = c.name;
@@ -73,7 +73,7 @@ const AdminOrders = () => {
         <div className="flowers-admin-panel fade-in">
             <div className="operation-content" style={{ padding: '20px 40px' }}>
 
-                {/* Убрали заголовок ORDER MANAGEMENT */}
+
 
                 <div className="luxury-filter-panel">
                     <div className="filter-group">
@@ -117,7 +117,7 @@ const AdminOrders = () => {
                                 <tr key={order.id}>
                                     <td className="id-cell">#{order.id}</td>
                                     <td className="date-cell">{order.deliveryDate}</td>
-                                    {/* Вместо ID выводим имя из нашей карты */}
+
                                     <td className="name-cell">
                                         {customers[order.customerId] || `Клиент #${order.customerId}`}
                                     </td>

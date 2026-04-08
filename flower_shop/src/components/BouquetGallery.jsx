@@ -3,7 +3,7 @@ import api from '../api';
 import './BouquetGallery.css';
 
 const BouquetGallery = ({ isAdmin = false, user, onEdit, bouquets: externalBouquets }) => {
-    // Если пришли внешние букеты (из админки), используем их, иначе пустой массив
+
     const [bouquets, setBouquets] = useState(externalBouquets || []);
     const [availableFlowers, setAvailableFlowers] = useState([]);
     const [openedComposition, setOpenedComposition] = useState(null);
@@ -17,8 +17,7 @@ const BouquetGallery = ({ isAdmin = false, user, onEdit, bouquets: externalBouqu
     const [isFilterFlowersOpen, setIsFilterFlowersOpen] = useState(false);
     const filterDropdownRef = useRef(null);
 
-    // СИНХРОНИЗАЦИЯ: Это то, чего не хватало!
-    // Когда в ManageBouquets меняется стейт, этот useEffect обновит галерею мгновенно
+
     useEffect(() => {
         if (externalBouquets) {
             setBouquets(externalBouquets);
@@ -55,7 +54,7 @@ const BouquetGallery = ({ isAdmin = false, user, onEdit, bouquets: externalBouqu
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Загружаем букеты только если они не пришли сверху (не из админки)
+
                 if (!externalBouquets) {
                     const bRes = await api.get('/bouquets');
                     setBouquets(bRes.data);
@@ -67,7 +66,7 @@ const BouquetGallery = ({ isAdmin = false, user, onEdit, bouquets: externalBouqu
             }
         };
         fetchData();
-    }, [externalBouquets]); // Добавили зависимость
+    }, [externalBouquets]);
 
     useEffect(() => {
         const handleClick = (e) => {
@@ -98,7 +97,7 @@ const BouquetGallery = ({ isAdmin = false, user, onEdit, bouquets: externalBouqu
 
     return (
         <div className="bouquet-gallery-container fade-in">
-            {/* ... фильтры остаются без изменений ... */}
+
             <div className="luxury-filter-panel">
                 {isAdmin && (
                     <div className="filter-group">

@@ -1,4 +1,4 @@
-/* 1. Анимация появления */
+
 .fade-in {
     animation: fadeIn 0.5s ease-in-out;
 }
@@ -8,21 +8,20 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* 2. ГЛАВНЫЙ КОНТЕЙНЕР — теперь строго центрирует всё по оси */
 .manage-orders-container {
     display: flex;
     flex-direction: column;
-    align-items: center; /* ЭТО ВАЖНО: выравнивает по центру экрана */
+    align-items: center;
     width: 100%;
     padding: 20px;
     box-sizing: border-box;
 }
 
-/* 3. ПАНЕЛЬ ФИЛЬТРОВ — расширена до 1300px */
+
 .luxury-filter-panel {
     display: flex;
     align-items: center;
-    justify-content: center; /* Центрирует инпуты внутри плашки */
+    justify-content: center;
     gap: 30px;
     background: #ffffff;
     padding: 25px 40px;
@@ -30,12 +29,12 @@
     box-shadow: 0 6px 20px rgba(0,0,0,0.04);
     margin-bottom: 25px;
 
-    width: 95%;           /* Тянется почти на весь экран */
-    max-width: 1300px;    /* Максимальная ширина */
+    width: 95%;
+    max-width: 1300px;
     box-sizing: border-box;
 }
 
-/* 4. КОНТЕЙНЕР ТАБЛИЦЫ — расширен до 1300px */
+
 .table-container-luxury {
     background: white;
     border-radius: 20px;
@@ -43,12 +42,12 @@
     box-shadow: 0 12px 40px rgba(0,0,0,0.06);
     border: 1px solid #f0f0f0;
 
-    width: 95%;           /* Совпадает с шириной фильтров */
+    width: 95%;
     max-width: 1300px;
-    margin: 0 auto;       /* Дополнительная страховка центрирования */
+    margin: 0 auto;
 }
 
-/* Твои стили таблицы и текста */
+
 .luxury-table {
     width: 100%;
     border-collapse: collapse;
@@ -57,7 +56,7 @@
 .luxury-table th,
 .luxury-table td {
     padding: 20px;
-    text-align: center; /* Весь текст внутри ячеек по центру */
+    text-align: center;
     border-bottom: 1px solid #fdfaf7;
 }
 
@@ -69,7 +68,7 @@
     color: #a0a0a0;
 }
 
-/* Стили фильтров (твои оригинальные) */
+
 .filter-group {
     display: flex;
     flex-direction: column;
@@ -94,7 +93,7 @@
     background: transparent;
 }
 
-/* Статусы */
+
 .status-select-luxury {
     border: none;
     background: transparent;

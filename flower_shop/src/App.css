@@ -123,11 +123,11 @@ h2 {
 .top-service-bar {
     width: 100%;
     display: flex;
-    justify-content: space-between; /* Текст слева, кнопка справа */
+    justify-content: space-between;
     align-items: center;
     padding: 10px 40px;
     box-sizing: border-box;
-    background-color: transparent; /* Или #f8f4eb, чтобы сливалось с фоном */
+    background-color: transparent;
 }
 
 .user-status-text {
@@ -135,7 +135,7 @@ h2 {
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 2px;
-    color: #bfa37e; /* Золотисто-бежевый акцент */
+    color: #bfa37e;
     font-weight: 600;
 }
 
@@ -157,19 +157,19 @@ h2 {
     border-bottom: 1px solid #000;
 }
 
-/* Панель над Header */
+
 .top-service-bar {
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 60px; /* Увеличили отступы */
+    padding: 15px 60px;
     box-sizing: border-box;
-    background-color: #f8f4eb; /* Явно задаем фон фона страницы */
-    z-index: 100; /* Чтобы было поверх всего */
+    background-color: #f8f4eb;
+    z-index: 100;
 }
 
-/* Текст статуса слева */
+
 .user-status-text {
     font-family: 'Segoe UI', sans-serif;
     font-size: 13px;
@@ -179,7 +179,7 @@ h2 {
     font-weight: 700;
 }
 
-/* Кнопка выхода справа */
+
 .logout-top-btn {
     background: none;
     border: none;
@@ -199,26 +199,25 @@ h2 {
     border-bottom: 1px solid #000;
 }
 
-/* Убираем лишний отступ у Header, если он есть */
+
 .hero-section {
     margin-top: 0 !important;
 }
 
-/* Текст статуса слева (Администратор / Пользователь) */
-/* Текст статуса (Администратор / Пользователь) в черном цвете */
+
 .user-status-text {
     font-family: 'Segoe UI', 'Montserrat', sans-serif;
     font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: 4px; /* Увеличили для пущей серьезности */
-    color: #000000;      /* Чистый черный */
-    font-weight: 600;    /* Чуть добавили веса, раз цвет стал строгим */
+    letter-spacing: 4px;
+    color: #000000;
+    font-weight: 600;
     position: relative;
     padding-left: 1px;
-    opacity: 0.5;        /* Легкая прозрачность, чтобы не "резало" глаз */
+    opacity: 0.5;
 }
 
-/* Точка перед текстом теперь тоже черная */
+
 
 :root {
     background-color: #f8f4eb;
@@ -344,11 +343,11 @@ h2 {
 .top-service-bar {
     width: 100%;
     display: flex;
-    justify-content: space-between; /* Текст слева, кнопка справа */
+    justify-content: space-between;
     align-items: center;
     padding: 10px 40px;
     box-sizing: border-box;
-    background-color: transparent; /* Или #f8f4eb, чтобы сливалось с фоном */
+    background-color: transparent;
 }
 
 .user-status-text {
@@ -356,7 +355,7 @@ h2 {
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 2px;
-    color: #bfa37e; /* Золотисто-бежевый акцент */
+    color: #bfa37e;
     font-weight: 600;
 }
 
@@ -378,19 +377,19 @@ h2 {
     border-bottom: 1px solid #000;
 }
 
-/* Панель над Header */
+
 .top-service-bar {
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 60px; /* Увеличили отступы */
+    padding: 15px 60px;
     box-sizing: border-box;
-    background-color: #f8f4eb; /* Явно задаем фон фона страницы */
-    z-index: 100; /* Чтобы было поверх всего */
+    background-color: #f8f4eb;
+    z-index: 100;
 }
 
-/* Текст статуса слева */
+
 .user-status-text {
     font-family: 'Segoe UI', sans-serif;
     font-size: 13px;
@@ -400,7 +399,7 @@ h2 {
     font-weight: 700;
 }
 
-/* Кнопка выхода справа */
+
 .logout-top-btn {
     background: none;
     border: none;
@@ -420,7 +419,7 @@ h2 {
     border-bottom: 1px solid #000;
 }
 
-/* Убираем лишний отступ у Header, если он есть */
+
 .hero-section {
     margin-top: 0 !important;
 }
@@ -434,7 +433,7 @@ h2 {
     font-weight: 500;
     position: relative;
 
-    /* Увеличиваем отступ, чтобы текст отодвинулся от точки */
+
     padding-left: 15px;
 
     opacity: 0.5;
@@ -445,10 +444,10 @@ h2 {
     content: '';
     position: absolute;
 
-    /* Ставим точку в самый край (в 0) */
+
     left: 0;
 
-    /* Центрируем по вертикали */
+
     top: 50%;
     transform: translateY(-50%);
 

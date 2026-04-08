@@ -12,7 +12,7 @@ const ManageCustomers = () => {
     const [filterName, setFilterName] = useState('');
     const [filterPhone, setFilterPhone] = useState('');
 
-    // Словарь для перевода статусов
+
     const statusMap = {
         'PROCESSING': 'В обработке',
         'SHIPPING': 'Доставляется',
@@ -75,7 +75,7 @@ const ManageCustomers = () => {
                                 placeholder="+375..."
                             />
                         </div>
-                        {/* Кнопка сброса теперь тоже в стиле luxury */}
+
                         <button className="luxury-action-btn reset-btn" onClick={() => { setFilterName(''); setFilterPhone(''); }}>
                             Очистить <div className="btn-line"></div>
                         </button>
@@ -148,7 +148,7 @@ const ManageCustomers = () => {
                                                     <div className="bq-name-mini">{bq.name}</div>
                                                     <div className="bq-price-mini">{order.finalPrice} BYN</div>
                                                 </div>
-                                                {/* ПЕРЕВОД СТАТУСА */}
+
                                                 <div className={`mini-status-label ${order.status}`}>
                                                     {statusMap[order.status] || order.status}
                                                 </div>

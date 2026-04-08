@@ -1,4 +1,4 @@
-/* --- КНОПКИ В СТИЛЕ LUXURY (Как в букетах/цветах) --- */
+
 .luxury-action-btn {
     background: none;
     border: none;
@@ -13,7 +13,7 @@
     transition: color 0.3s ease;
 }
 
-/* Линия под кнопкой */
+
 .luxury-action-btn .btn-line {
     position: absolute;
     bottom: 0;
@@ -33,17 +33,16 @@
     color: #5d4037;
 }
 
-/* Кнопка сброса в панели фильтров */
+
 .reset-btn {
     margin-left: auto;
     align-self: center;
 }
 
-/* --- СТАТУСЫ НА РУССКОМ --- */
 .mini-status-label {
     font-size: 9px;
     padding: 6px 12px;
-    border-radius: 2px; /* Более строгие формы */
+    border-radius: 2px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -54,11 +53,10 @@
 .mini-status-label.DELIVERED { background: #f0ece8; color: #5d4037; border: 1px solid #efe8e0; }
 .mini-status-label.CANCELLED { background: #fff; color: #bcaaa4; border: 1px dashed #d7ccc8; }
 
-/* --- МОДАЛЬНОЕ ОКНО (Фикс крестика) --- */
 .modal-content {
     background: #fff;
     padding: 50px;
-    border-radius: 0; /* Полностью прямоугольное */
+    border-radius: 0;
     width: 90%;
     max-width: 550px;
     position: relative;
@@ -80,5 +78,5 @@
 
 .close-btn:hover {
     color: #8d6e63;
-    transform: rotate(90deg); /* Легкий эффект при наведении */
+    transform: rotate(90deg);
 }

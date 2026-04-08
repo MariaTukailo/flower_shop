@@ -14,7 +14,7 @@ function App() {
 
     return (
         <div className="main-container">
-            {/* Верхняя панель: появляется только когда user не null */}
+
             {user && (
                 <div className="top-service-bar">
                     <span className="user-status-text">

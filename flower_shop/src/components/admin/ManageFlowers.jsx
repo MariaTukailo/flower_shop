@@ -4,7 +4,7 @@ import FlowerGallery from '../FlowerGallery';
 import './ManageFlowers.css';
 
 const ManageFlowers = () => {
-    // 1. Создаем стейт для цветов прямо здесь
+
     const [flowers, setFlowers] = useState([]);
     const [activeOperation, setActiveOperation] = useState('findAll');
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,7 +16,7 @@ const ManageFlowers = () => {
 
     const colorOptions = ['белый', 'желтый', 'розовый', 'красный', 'зеленый', 'черный'];
 
-    // 2. Загружаем цветы при старте
+
     useEffect(() => {
         const fetchAll = async () => {
             try {
@@ -31,7 +31,7 @@ const ManageFlowers = () => {
 
     const handleEditClick = (flower) => {
         setEditingFlower(flower);
-        setFlowerData({ ...flower }); // Копируем данные, чтобы не менять оригинал сразу
+        setFlowerData({ ...flower });
         setIsModalOpen(true);
     };
 
@@ -52,30 +52,29 @@ const ManageFlowers = () => {
         setFlowerData(prev => ({ ...prev, [name]: val }));
     };
 
-    // 3. УМНОЕ ОБНОВЛЕНИЕ БЕЗ ПЕРЕЗАГРУЗКИ
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const payload = { ...flowerData, price: Number(flowerData.price) };
 
             if (editingFlower) {
-                // Если редактируем (используем PUT или PATCH)
+
                 const response = await api.put(`/flowers/${editingFlower.id}`, payload);
 
-                // Обновляем массив цветов: заменяем старый цветок новым из ответа сервера
                 setFlowers(prev => prev.map(f => f.id === editingFlower.id ? response.data : f));
                 alert("Данные успешно обновлены ✨");
             } else {
-                // Если создаем новый
+
                 const response = await api.post('/flowers', payload);
 
-                // Добавляем новый цветок в список
+
                 setFlowers(prev => [...prev, response.data]);
                 alert("Цветок успешно добавлен!");
             }
 
             closeModal();
-            // window.location.reload(); <-- УДАЛЕНО! Теперь тебя не выкинет.
+
         } catch (error) {
             console.error(error);
             alert("Ошибка при сохранении.");
@@ -96,7 +95,7 @@ const ManageFlowers = () => {
             </div>
 
             <div className="operation-content">
-                {/* 4. Передаем наш стейт 'flowers' в галерею */}
+
                 <FlowerGallery
                     flowers={flowers}
                     isAdmin={true}
@@ -104,7 +103,7 @@ const ManageFlowers = () => {
                 />
             </div>
 
-            {/* ... остальная часть с модальным окном и формой без изменений ... */}
+
             {isModalOpen && (
                 <div className="modal-overlay" onClick={closeModal}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>

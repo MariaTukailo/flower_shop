@@ -18,14 +18,14 @@ html, body {
     margin-top: 20px;
     display: flex;
     justify-content: center;
-    gap: 80px; /* Твой оригинальный отступ */
+    gap: 80px;
     width: 100%;
     max-width: 1100px;
     border-bottom: 1px solid #e2d1c3;
     padding-bottom: 15px;
     position: relative;
     background-color: #f7f3e8 !important;
-    align-items: center; /* Центрируем иконку по вертикали с текстом */
+    align-items: center;
 }
 
 .nav-btn {
@@ -66,7 +66,7 @@ html, body {
     font-weight: 600 !important;
 }
 
-/* Стили для иконки внутри кнопки, чтобы она не прыгала */
+
 .nav-btn svg {
     display: block;
 }

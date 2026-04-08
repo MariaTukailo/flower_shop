@@ -256,7 +256,7 @@
     animation: fadeIn 0.3s ease-out forwards;
 }
 
-/* Кнопка карандаша на карточке букета */
+
 .edit-icon-btn {
     position: absolute;
     top: 20px;
@@ -284,7 +284,7 @@
     border-color: #000;
 }
 
-/* Фикс для card-image-wrapper, чтобы позиционирование работало */
+
 .card-image-wrapper {
     position: relative;
     height: 350px;

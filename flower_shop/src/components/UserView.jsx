@@ -32,7 +32,7 @@ function UserView({ user, onLogout }) {
                     Профиль
                 </button>
 
-                {/* Корзина на месте кнопки ВЫХОД */}
+
                 <button
                     className={`nav-btn ${activeTab === 'cart' ? 'active' : ''}`}
                     onClick={() => setActiveTab('cart')}

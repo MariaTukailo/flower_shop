@@ -1,20 +1,20 @@
-/* --- ЖЕСТКАЯ СЕТКА: 4 В РЯД --- */
+
 .operation-content {
     width: 100%;
     margin-top: 30px;
 }
 
-/* Контейнер самой галереи (проверь класс в BouquetGallery, обычно это grid или похожий) */
+
 .operation-content .bouquet-grid,
 .operation-content .gallery-container {
     display: grid !important;
-    /* Ровно 4 колонки с одинаковой шириной */
+
     grid-template-columns: repeat(4, 1fr) !important;
     gap: 25px !important;
     width: 100% !important;
 }
 
-/* Адаптив: если экран совсем узкий, тогда уменьшаем, но на десктопе будет 4 */
+
 @media (max-width: 1200px) {
     .operation-content .bouquet-grid,
     .operation-content .gallery-container {
@@ -29,9 +29,9 @@
     }
 }
 
-/* Исправляем возможный конфликт с шириной панели */
+
 .flowers-admin-panel {
-    max-width: 1400px !important; /* Убедись, что места хватает на 4 карточки */
+    max-width: 1400px !important;
     margin: 0 auto;
     padding: 20px;
 }

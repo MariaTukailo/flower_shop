@@ -48,7 +48,7 @@ const ManageBouquets = () => {
         setIsModalOpen(true);
     };
 
-    // --- ОБНОВЛЕНИЕ ТОВАРА В СПИСКЕ В РЕАЛЬНОМ ВРЕМЕНИ ---
+
     const handleUpdateSubmit = async (e) => {
         if (e) e.preventDefault();
         try {
@@ -60,14 +60,12 @@ const ManageBouquets = () => {
 
             const response = await api.patch(`/bouquets/${editingBouquet.id}`, updateData);
 
-            // КЛЮЧЕВОЙ МОМЕНТ:
-            // Мы берем ответ от сервера (response.data) и заменяем старый объект в массиве.
-            // React увидит, что массив изменился, и перерисует BouquetGallery автоматически.
+
             setBouquets(prevBouquets =>
                 prevBouquets.map(b => (b.id === editingBouquet.id ? response.data : b))
             );
 
-            closeModal(); // Закрываем окно, изменения уже в стейте!
+            closeModal();
         } catch (error) {
             console.error("Ошибка обновления:", error);
             alert("Не удалось сохранить изменения.");
@@ -87,7 +85,7 @@ const ManageBouquets = () => {
             };
             const response = await api.post('/bouquets', payload);
 
-            // Добавляем новый букет в начало списка, чтобы он сразу появился на экране
+
             setBouquets(prevBouquets => [response.data, ...prevBouquets]);
 
             closeModal();
@@ -122,7 +120,7 @@ const ManageBouquets = () => {
             </div>
 
             <div className="operation-content">
-                {/* Передаем актуальный массив 'bouquets' */}
+
                 <BouquetGallery bouquets={bouquets} isAdmin={true} onEdit={handleEditClick} />
             </div>
 
@@ -179,7 +177,7 @@ const ManageBouquets = () => {
                                 </div>
                             ) : (
                                 <form onSubmit={handleCreateSubmit}>
-                                    {/* ... тут твоя форма создания (она остается без изменений) ... */}
+
                                     <h2 className="form-title-luxury">Новая композиция</h2>
                                     <div className="form-grid">
                                         <div className="input-field-luxury full-width">

@@ -7,7 +7,7 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* СЕТКА */
+
 .flowers-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -17,7 +17,7 @@
     margin: 0 auto;
 }
 
-/* КАРТОЧКА */
+
 .flower-card {
     background: #fff;
     border: 1px solid #f0ece8;
@@ -48,7 +48,7 @@
     object-fit: cover;
 }
 
-/* КНОПКИ АДМИНА */
+
 .edit-icon-btn {
     position: absolute;
     bottom: 15px;
@@ -91,7 +91,7 @@
 .card-status-badge.active { background: rgba(255, 255, 255, 0.9); color: #2e7d32; border: 1px solid #c8e6c9; }
 .card-status-badge.hidden { background: rgba(255, 255, 255, 0.9); color: #c62828; border: 1px dashed #d7ccc8; }
 
-/* КОНТЕНТ КАРТОЧКИ */
+
 .card-content {
     padding: 25px;
     text-align: left;
@@ -130,11 +130,11 @@
     margin: 0;
 }
 
-/* ФИЛЬТРЫ (ИСПРАВЛЕННОЕ ВЫРАВНИВАНИЕ) */
+
 .luxury-filter-panel {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end; /* Выравнивание всех элементов по низу */
+    align-items: flex-end;
     flex-wrap: wrap;
     gap: 30px;
     padding: 30px 50px;
@@ -184,7 +184,7 @@
     border-color: #8d6e63;
 }
 
-/* КНОПКА РЕЖИМА */
+
 .luxury-action-btn {
     background: none;
     border: none;
@@ -194,7 +194,7 @@
     font-weight: 800;
     cursor: pointer;
     position: relative;
-    padding: 8px 0; /* Совпадает с паддингом инпутов */
+    padding: 8px 0;
     color: #8d6e63;
     width: fit-content;
     text-align: left;

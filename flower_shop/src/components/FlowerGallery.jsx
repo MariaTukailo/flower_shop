@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import api from '../api';
 import './FlowerGallery.css';
 
-// 1. Добавляем flowers в деструктуризацию пропсов (это данные из админки)
+
 const FlowerGallery = ({ isAdmin = false, onEdit, flowers: externalFlowers }) => {
-    // 2. Инициализируем стейт либо внешними данными, либо пустым массивом
+
     const [flowers, setFlowers] = useState(externalFlowers || []);
     const [filterName, setFilterName] = useState('');
     const [filterColor, setFilterColor] = useState('все цвета');
@@ -22,8 +22,7 @@ const FlowerGallery = ({ isAdmin = false, onEdit, flowers: externalFlowers }) =>
         return translations[color.toLowerCase()] || color;
     };
 
-    // 3. КЛЮЧЕВОЙ МОМЕНТ: Синхронизация.
-    // Если в родительской админке список изменился, этот эффект тут же обновит галерею.
+
     useEffect(() => {
         if (externalFlowers) {
             setFlowers(externalFlowers);
@@ -32,7 +31,7 @@ const FlowerGallery = ({ isAdmin = false, onEdit, flowers: externalFlowers }) =>
 
     const fetchFlowers = async () => {
         try {
-            // Загружаем сами только если нам НЕ передали цветы сверху (например, на главной)
+
             if (!externalFlowers) {
                 const endpoint = showOnlyActive ? '/active' : '';
                 const response = await api.get(`/flowers${endpoint}`);
@@ -61,7 +60,7 @@ const FlowerGallery = ({ isAdmin = false, onEdit, flowers: externalFlowers }) =>
 
     return (
         <div className="flower-gallery-container fade-in">
-            {/* Панель фильтрации (без изменений) */}
+
             <div className="luxury-filter-panel">
                 <div className="filter-group">
                     <span className="filter-hint">Название</span>
