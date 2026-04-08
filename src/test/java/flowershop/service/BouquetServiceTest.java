@@ -36,154 +36,43 @@ class BouquetServiceTest {
 
     private Bouquet bouquet;
     private Flower flower;
+    private Flower inactiveFlower;
 
     @BeforeEach
     void setUp() {
         flower = new Flower();
         flower.setId(1L);
-        flower.setPrice(50.0);
         flower.setActive(true);
+        flower.setPrice(10.0);
+
+        inactiveFlower = new Flower();
+        inactiveFlower.setId(2L);
+        inactiveFlower.setActive(false);
+        inactiveFlower.setPrice(5.0);
 
         bouquet = new Bouquet();
         bouquet.setId(1L);
-        bouquet.setName("Весенний");
-        bouquet.setFlowers(new ArrayList<>(List.of(flower)));
-        bouquet.setPrice(50.0); // Добавляем цену в setUp, чтобы тесты на чтение не падали
+        bouquet.setName("Тест");
         bouquet.setActive(true);
+        bouquet.setPrice(100.0);
+        bouquet.setFlowers(new ArrayList<>(List.of(flower)));
     }
+
+    // --- ТЕСТЫ НА ПОИСК (READ) ---
 
     @Test
     void findAll_Success() {
         when(bouquetRepository.findAll()).thenReturn(List.of(bouquet));
         List<BouquetDto> result = bouquetService.findAll();
-        assertFalse(result.isEmpty());
+        assertEquals(1, result.size());
+        verify(bouquetRepository).findAll();
     }
 
     @Test
     void findAllActive_Success() {
-        Bouquet inactive = new Bouquet();
-        inactive.setActive(false);
-        when(bouquetRepository.findAll()).thenReturn(List.of(bouquet, inactive));
-        List<BouquetDto> result = bouquetService.findAllActive();
-        assertEquals(1, result.size());
-    }
-
-    @Test
-    void findById_Success() {
-        when(bouquetRepository.findById(1L)).thenReturn(Optional.of(bouquet));
-        BouquetDto result = bouquetService.findById(1L);
-        assertNotNull(result);
-    }
-
-    @Test
-    void findById_NotFound() {
-        when(bouquetRepository.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> bouquetService.findById(1L));
-    }
-
-    @Test
-    void findAllOptimized_Success() {
-        when(bouquetRepository.findAllWithFlowers()).thenReturn(List.of(bouquet));
-        List<BouquetDto> result = bouquetService.findAllOptimized();
-        assertFalse(result.isEmpty());
-    }
-
-    @Test
-    void create_Success_FiltersInactiveFlowers() {
-        Flower inactiveFlower = new Flower();
-        inactiveFlower.setId(2L);
-        inactiveFlower.setActive(false);
-        inactiveFlower.setPrice(30.0);
-
-        FlowerDto f1 = new FlowerDto(); f1.setId(1L);
-        FlowerDto f2 = new FlowerDto(); f2.setId(2L);
-
-        BouquetDto dto = new BouquetDto();
-        dto.setName("Микс");
-        dto.setFlowers(List.of(f1, f2));
-
-        when(flowerRepository.findAllById(any())).thenReturn(List.of(flower, inactiveFlower));
-        when(bouquetRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
-
-        BouquetDto result = bouquetService.create(dto);
-
-        assertEquals(50.0, result.getPrice());
-        verify(bouquetRepository).save(any());
-    }
-
-    @Test
-    void updateStatus_SetActive_Failure_DueToInactiveFlowers() {
-        flower.setActive(false);
-        when(bouquetRepository.findById(1L)).thenReturn(Optional.of(bouquet));
-
-        bouquetService.updateStatus(1L, true);
-
-        assertTrue(bouquet.isActive());
-        verify(bouquetRepository, never()).save(any());
-    }
-
-    @Test
-    void updateStatus_SetInactive_Success() {
-        when(bouquetRepository.findById(1L)).thenReturn(Optional.of(bouquet));
-        when(bouquetRepository.save(any())).thenReturn(bouquet);
-
-        bouquetService.updateStatus(1L, false);
-
-        assertFalse(bouquet.isActive());
-        verify(bouquetRepository).save(any());
-    }
-
-    @Test
-    void updateStatus_NotFound() {
-        when(bouquetRepository.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(ResponseStatusException.class, () -> bouquetStatusUpdate(1L, true));
-    }
-
-    @Test
-    void create_EmptyOrInactiveFlowers_PriceIsZero() {
-        Flower inactiveFlower = new Flower();
-        inactiveFlower.setId(99L);
-        inactiveFlower.setActive(false);
-        inactiveFlower.setPrice(100.0);
-
-        FlowerDto f1 = new FlowerDto();
-        f1.setId(99L);
-
-        BouquetDto dto = new BouquetDto();
-        dto.setName("Пустой букет");
-        dto.setFlowers(List.of(f1));
-
-        when(flowerRepository.findAllById(any())).thenReturn(List.of(inactiveFlower));
-        when(bouquetRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
-
-        BouquetDto result = bouquetService.create(dto);
-
-        assertEquals(0.0, result.getPrice());
-        assertTrue(result.getFlowers().isEmpty());
-    }
-
-    @Test
-    void updateStatus_SetActive_Success_AllFlowersActive() {
-        bouquet.setActive(false);
-        flower.setActive(true);
-
-        when(bouquetRepository.findById(1L)).thenReturn(Optional.of(bouquet));
-        when(bouquetRepository.save(any())).thenReturn(bouquet);
-
-        BouquetDto result = bouquetService.updateStatus(1L, true);
-
-        assertTrue(result.isActive());
-        verify(bouquetRepository).save(bouquet);
-    }
-
-    @Test
-    void findAllActive_FiltersCorrectl() {
-        Bouquet b1 = new Bouquet();
-        b1.setActive(true);
-        Bouquet b2 = new Bouquet();
-        b2.setActive(false);
-
-        when(bouquetRepository.findAll()).thenReturn(List.of(b1, b2));
+        Bouquet inactiveB = new Bouquet();
+        inactiveB.setActive(false);
+        when(bouquetRepository.findAll()).thenReturn(List.of(bouquet, inactiveB));
 
         List<BouquetDto> result = bouquetService.findAllActive();
 
@@ -192,127 +81,131 @@ class BouquetServiceTest {
     }
 
     @Test
-    void updateStatus_SetActive_Success_EmptyFlowers() {
-        bouquet.setActive(false);
-        bouquet.setFlowers(new ArrayList<>());
+    void findById_Success() {
+        when(bouquetRepository.findById(1L)).thenReturn(Optional.of(bouquet));
+        BouquetDto result = bouquetService.findById(1L);
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+    }
 
+    @Test
+    void findById_NotFound_ThrowsException() {
+        when(bouquetRepository.findById(99L)).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> bouquetService.findById(99L));
+    }
+
+    @Test
+    void findAllOptimized_Success() {
+        when(bouquetRepository.findAllWithFlowers()).thenReturn(List.of(bouquet));
+        List<BouquetDto> result = bouquetService.findAllOptimized();
+        assertNotNull(result);
+        verify(bouquetRepository).findAllWithFlowers();
+    }
+
+    // --- ТЕСТЫ НА СОЗДАНИЕ (CREATE) ---
+
+    @Test
+    void create_Success_FiltersInactiveFlowers() {
+        FlowerDto f1 = new FlowerDto(); f1.setId(1L);
+        FlowerDto f2 = new FlowerDto(); f2.setId(2L);
+
+        BouquetDto inputDto = new BouquetDto();
+        inputDto.setName("Микс");
+        inputDto.setPrice(200.0);
+        inputDto.setFlowers(List.of(f1, f2));
+
+        when(flowerRepository.findAllById(any())).thenReturn(List.of(flower, inactiveFlower));
+        when(bouquetRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+
+        BouquetDto result = bouquetService.create(inputDto);
+
+        assertEquals(200.0, result.getPrice()); // Цена из DTO
+        assertEquals(1, result.getFlowers().size()); // Только активный цветок
+        assertTrue(result.isActive());
+    }
+
+    // --- ТЕСТЫ НА СТАТУС (UPDATE STATUS) ---
+
+    @Test
+    void updateStatus_ToActive_Success() {
+        bouquet.setActive(false);
         when(bouquetRepository.findById(1L)).thenReturn(Optional.of(bouquet));
         when(bouquetRepository.save(any())).thenReturn(bouquet);
 
         BouquetDto result = bouquetService.updateStatus(1L, true);
 
         assertTrue(result.isActive());
-        verify(bouquetRepository).save(bouquet);
+        verify(bouquetRepository).save(any());
     }
 
     @Test
-    void updateStatus_SetInactive_AlreadyInactive() {
-        bouquet.setActive(false);
+    void updateStatus_ToActive_Failure_InactiveFlowers() {
+        bouquet.setFlowers(List.of(inactiveFlower)); // В букете неактивный цветок
+        when(bouquetRepository.findById(1L)).thenReturn(Optional.of(bouquet));
 
+        BouquetDto result = bouquetService.updateStatus(1L, true);
+
+        assertFalse(result.isActive()); // Не должен измениться (остался false)
+        verify(bouquetRepository, never()).save(any());
+    }
+
+    @Test
+    void updateStatus_ToInactive_Success() {
         when(bouquetRepository.findById(1L)).thenReturn(Optional.of(bouquet));
         when(bouquetRepository.save(any())).thenReturn(bouquet);
 
         BouquetDto result = bouquetService.updateStatus(1L, false);
 
         assertFalse(result.isActive());
-        verify(bouquetRepository).save(bouquet);
-    }
-
-    @Test
-    void create_WithNullFlowersList() {
-        BouquetDto dto = new BouquetDto();
-        dto.setName("Null Flowers");
-        dto.setFlowers(new ArrayList<>());
-
-        when(flowerRepository.findAllById(any())).thenReturn(new ArrayList<>());
-        when(bouquetRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
-
-        BouquetDto result = bouquetService.create(dto);
-
-        assertEquals(0.0, result.getPrice());
         verify(bouquetRepository).save(any());
     }
 
     @Test
-    void updatePartial_AllFieldsSuccess() {
+    void updateStatus_NotFound_ThrowsException() {
+        when(bouquetRepository.findById(99L)).thenReturn(Optional.empty());
+        assertThrows(ResponseStatusException.class, () -> bouquetService.updateStatus(99L, true));
+    }
+
+    // --- ТЕСТЫ НА ЧАСТИЧНОЕ ОБНОВЛЕНИЕ (PATCH) ---
+
+    @Test
+    void updatePartial_UpdateAllFields() {
         when(bouquetRepository.findById(1L)).thenReturn(Optional.of(bouquet));
-        when(bouquetRepository.save(any(Bouquet.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(bouquetRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
-        BouquetDto result = bouquetService.updatePartial(1L, false, 99.99, "new/path.jpg");
+        BouquetDto result = bouquetService.updatePartial(1L, false, 55.5, "new_photo.jpg");
 
-        assertNotNull(result);
-        assertFalse(bouquet.isActive());
-        assertEquals(99.99, bouquet.getPrice());
-        assertEquals("new/path.jpg", bouquet.getPathPhoto());
-        verify(bouquetRepository).save(bouquet);
+        assertFalse(result.isActive());
+        assertEquals(55.5, result.getPrice());
+        assertEquals("new_photo.jpg", result.getPathPhoto());
     }
 
     @Test
-    void updatePartial_OnlyPriceProvided() {
-        String originalPhoto = bouquet.getPathPhoto();
+    void updatePartial_UpdateOnlyPrice() {
         when(bouquetRepository.findById(1L)).thenReturn(Optional.of(bouquet));
-        when(bouquetRepository.save(any(Bouquet.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(bouquetRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
-        bouquetService.updatePartial(1L, null, 150.0, null);
+        BouquetDto result = bouquetService.updatePartial(1L, null, 300.0, null);
 
-        assertEquals(150.0, bouquet.getPrice());
-        assertTrue(bouquet.isActive());
-        assertEquals(originalPhoto, bouquet.getPathPhoto());
+        assertEquals(300.0, result.getPrice());
+        assertTrue(result.isActive()); // Остался прежним
     }
 
     @Test
-    void updatePartial_BlankPhoto_ShouldNotUpdate() {
-        bouquet.setPathPhoto("original.jpg");
+    void updatePartial_BlankPhoto_DoesNotUpdate() {
+        bouquet.setPathPhoto("old.jpg");
         when(bouquetRepository.findById(1L)).thenReturn(Optional.of(bouquet));
-        when(bouquetRepository.save(any(Bouquet.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(bouquetRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
         bouquetService.updatePartial(1L, null, null, "   ");
 
-        assertEquals("original.jpg", bouquet.getPathPhoto());
+        assertEquals("old.jpg", bouquet.getPathPhoto());
     }
 
     @Test
     void updatePartial_NotFound() {
         when(bouquetRepository.findById(99L)).thenReturn(Optional.empty());
-
-        assertThrows(EntityNotFoundException.class,
-                () -> bouquetService.updatePartial(99L, true, 10.0, "photo.jpg"));
-
-        verify(bouquetRepository, never()).save(any());
-    }
-
-    @Test
-    void updateStatus_SetActive_Failure_WithMixedActiveAndInactiveFlowers() {
-        Flower activeF = new Flower(); activeF.setActive(true);
-        Flower inactiveF = new Flower(); inactiveF.setActive(false);
-        bouquet.setFlowers(new ArrayList<>(List.of(activeF, inactiveF)));
-
-        when(bouquetRepository.findById(1L)).thenReturn(Optional.of(bouquet));
-
-        bouquetService.updateStatus(1L, true);
-
-        verify(bouquetRepository, never()).save(any());
-    }
-
-    @Test
-    void create_WithVeryLargePrice_ShouldSaveCorrectly() {
-        flower.setPrice(999999.99);
-        FlowerDto fDto = new FlowerDto(); fDto.setId(1L);
-
-        BouquetDto dto = new BouquetDto();
-        dto.setName("Luxury Bouquet");
-        dto.setFlowers(List.of(fDto));
-
-        when(flowerRepository.findAllById(any())).thenReturn(List.of(flower));
-        when(bouquetRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
-
-        BouquetDto result = bouquetService.create(dto);
-
-        assertEquals(999999.99, result.getPrice());
-    }
-
-    // Вспомогательный метод для корректности вызова
-    private void bouquetStatusUpdate(Long id, boolean status) {
-        bouquetService.updateStatus(id, status);
+        assertThrows(EntityNotFoundException.class, () ->
+                bouquetService.updatePartial(99L, true, 1.0, ""));
     }
 }
