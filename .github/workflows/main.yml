@@ -3,7 +3,7 @@ name: CI/CD Flower Shop
 on:
   push:
     branches: [ "main" ]
-  workflow_dispatch: # Позволяет запускать вручную из вкладки Actions
+  workflow_dispatch:
 
 jobs:
   # 1. СБОРКА И ТЕСТЫ
@@ -20,14 +20,12 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      # СБОРКА
       - name: Build project
         run: mvn clean compile
 
-      # ТЕСТЫ
       - name: Run Tests
         run: mvn test
-        continue-on-error: true # Тесты запустятся, но если упадут — процесс пойдет дальше
+        continue-on-error: true
 
   # 2. РАЗВЕРТЫВАНИЕ (DEPLOY)
   deploy:
@@ -41,21 +39,18 @@ jobs:
         run: npm install -g @railway/cli
 
       - name: Deploy to Railway
-        # Добавлен обязательный флаг --environment production
         run: railway up --service ${{ secrets.RAILWAY_SERVICE_NAME }} -p ${{ secrets.RAILWAY_PROJECT_ID }} --environment production
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
-    # 3. HEALTHCHECK (ПРОВЕРКА)
-    healthcheck:
-      needs: deploy
-      runs-on: ubuntu-latest
-      steps:
-        - name: Wait for service to start
-          run: sleep 60 # Дадим чуть больше времени на прогрев базы
+  # 3. HEALTHCHECK (ПРОВЕРКА) - ТЕПЕРЬ С ПРАВИЛЬНЫМИ ОТСТУПАМИ
+  healthcheck:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for service to start
+        run: sleep 60
 
-        - name: Check Health Endpoint
-          # Мы убираем /auth/login и проверяем просто корень сайта.
-          # Флаг -L поможет, если есть редиректы.
-          run: |
-            curl -vL https://flowershop-production-f107.up.railway.app/ || echo "Server is up but returned some code"
+      - name: Check Health Endpoint
+        run: |
+          curl -vL https://flowershop-production-f107.up.railway.app/ || echo "Server is up"
