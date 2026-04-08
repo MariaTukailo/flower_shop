@@ -3,13 +3,16 @@ name: CI/CD Flower Shop
 on:
   push:
     branches: [ "main" ]
+  workflow_dispatch: # Позволяет запускать вручную из вкладки Actions
 
 jobs:
   # 1. СБОРКА И ТЕСТЫ
   build-and-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -21,21 +24,25 @@ jobs:
       - name: Build project
         run: mvn clean compile
 
-      # ТЕСТЫ (Добавим продолжение при ошибке, чтобы билд не падал)
+      # ТЕСТЫ
       - name: Run Tests
         run: mvn test
-        continue-on-error: true # ХИТРОСТЬ: тесты запустятся, отчет будет, но деплой не прервется
+        continue-on-error: true # Тесты запустятся, но если упадут — процесс пойдет дальше
 
   # 2. РАЗВЕРТЫВАНИЕ (DEPLOY)
   deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Install Railway CLI
         run: npm install -g @railway/cli
+
       - name: Deploy to Railway
-        run: railway up --service ${{ secrets.RAILWAY_SERVICE_NAME }} -p ${{ secrets.RAILWAY_PROJECT_ID }}
+        # Добавлен обязательный флаг --environment production
+        run: railway up --service ${{ secrets.RAILWAY_SERVICE_NAME }} -p ${{ secrets.RAILWAY_PROJECT_ID }} --environment production
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
@@ -44,8 +51,9 @@ jobs:
     needs: deploy
     runs-on: ubuntu-latest
     steps:
-      - name: Wait for service
-        run: sleep 45 # Даем время серверу
-      - name: Check Health
+      - name: Wait for service to start
+        run: sleep 45 # Ждем 45 секунд, пока Spring Boot поднимется
+
+      - name: Check Health Endpoint
         run: |
           curl -f https://flowershop-production-f107.up.railway.app/auth/login || exit 1
