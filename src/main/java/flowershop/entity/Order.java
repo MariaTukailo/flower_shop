@@ -44,8 +44,9 @@ public class Order {
     private LocalTime deliveryTime;
 
     @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "status", columnDefinition = "status_type", nullable = false)
+// УДАЛЯЕМ @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+// УДАЛЯЕМ columnDefinition = "status_type"
+    @Column(name = "status", nullable = false)
     private OrderStatus status;
 
     @ManyToOne

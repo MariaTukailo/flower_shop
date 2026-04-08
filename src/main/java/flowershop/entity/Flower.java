@@ -39,8 +39,7 @@ public class Flower {
     private String pathPhoto;
 
     @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "color", columnDefinition = "color_type", nullable = false)
+    @Column(name = "color", nullable = false)
     private Color color;
 
     @ManyToMany(mappedBy = "flowers",fetch = FetchType.LAZY)
