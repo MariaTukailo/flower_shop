@@ -48,6 +48,7 @@ class BouquetServiceTest {
         bouquet.setId(1L);
         bouquet.setName("Весенний");
         bouquet.setFlowers(new ArrayList<>(List.of(flower)));
+        bouquet.setPrice(50.0); // Добавляем цену в setUp, чтобы тесты на чтение не падали
         bouquet.setActive(true);
     }
 
@@ -135,7 +136,7 @@ class BouquetServiceTest {
     @Test
     void updateStatus_NotFound() {
         when(bouquetRepository.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(ResponseStatusException.class, () -> bouquetService.updateStatus(1L, true));
+        assertThrows(ResponseStatusException.class, () -> bouquetStatusUpdate(1L, true));
     }
 
     @Test
@@ -192,7 +193,6 @@ class BouquetServiceTest {
 
     @Test
     void updateStatus_SetActive_Success_EmptyFlowers() {
-
         bouquet.setActive(false);
         bouquet.setFlowers(new ArrayList<>());
 
@@ -207,7 +207,6 @@ class BouquetServiceTest {
 
     @Test
     void updateStatus_SetInactive_AlreadyInactive() {
-
         bouquet.setActive(false);
 
         when(bouquetRepository.findById(1L)).thenReturn(Optional.of(bouquet));
@@ -221,7 +220,6 @@ class BouquetServiceTest {
 
     @Test
     void create_WithNullFlowersList() {
-
         BouquetDto dto = new BouquetDto();
         dto.setName("Null Flowers");
         dto.setFlowers(new ArrayList<>());
@@ -235,18 +233,13 @@ class BouquetServiceTest {
         verify(bouquetRepository).save(any());
     }
 
-    // --- ТЕСТЫ ДЛЯ updatePartial ---
-
     @Test
     void updatePartial_AllFieldsSuccess() {
-        // Настройка
         when(bouquetRepository.findById(1L)).thenReturn(Optional.of(bouquet));
         when(bouquetRepository.save(any(Bouquet.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        // Действие
         BouquetDto result = bouquetService.updatePartial(1L, false, 99.99, "new/path.jpg");
 
-        // Проверка
         assertNotNull(result);
         assertFalse(bouquet.isActive());
         assertEquals(99.99, bouquet.getPrice());
@@ -256,17 +249,15 @@ class BouquetServiceTest {
 
     @Test
     void updatePartial_OnlyPriceProvided() {
-        // Настройка (в setUp уже есть фото "Весенний" и цена 50.0)
         String originalPhoto = bouquet.getPathPhoto();
         when(bouquetRepository.findById(1L)).thenReturn(Optional.of(bouquet));
         when(bouquetRepository.save(any(Bouquet.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        // Обновляем только цену
         bouquetService.updatePartial(1L, null, 150.0, null);
 
         assertEquals(150.0, bouquet.getPrice());
-        assertTrue(bouquet.isActive()); // Остался прежним
-        assertEquals(originalPhoto, bouquet.getPathPhoto()); // Не изменилось
+        assertTrue(bouquet.isActive());
+        assertEquals(originalPhoto, bouquet.getPathPhoto());
     }
 
     @Test
@@ -275,7 +266,6 @@ class BouquetServiceTest {
         when(bouquetRepository.findById(1L)).thenReturn(Optional.of(bouquet));
         when(bouquetRepository.save(any(Bouquet.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        // Передаем пустую строку в фото
         bouquetService.updatePartial(1L, null, null, "   ");
 
         assertEquals("original.jpg", bouquet.getPathPhoto());
@@ -291,29 +281,21 @@ class BouquetServiceTest {
         verify(bouquetRepository, never()).save(any());
     }
 
-    // --- ДОПОЛНИТЕЛЬНЫЕ ПРОВЕРКИ ЛОГИКИ ---
-
     @Test
     void updateStatus_SetActive_Failure_WithMixedActiveAndInactiveFlowers() {
-        // Один цветок активен, второй - нет
         Flower activeF = new Flower(); activeF.setActive(true);
         Flower inactiveF = new Flower(); inactiveF.setActive(false);
         bouquet.setFlowers(new ArrayList<>(List.of(activeF, inactiveF)));
 
         when(bouquetRepository.findById(1L)).thenReturn(Optional.of(bouquet));
 
-        // Если логика метода updateStatus запрещает активацию при наличии неактивных цветов
         bouquetService.updateStatus(1L, true);
 
-        // Проверяем, что статус НЕ изменился (остался false, если он был false, или логика прервалась)
-        // В твоем коде выше в тесте 'updateStatus_SetActive_Failure_DueToInactiveFlowers'
-        // ты проверяла, что save не вызывался.
         verify(bouquetRepository, never()).save(any());
     }
 
     @Test
     void create_WithVeryLargePrice_ShouldSaveCorrectly() {
-        // Проверка на точность Double (хотя для денег лучше BigDecimal, но проверяем твой тип)
         flower.setPrice(999999.99);
         FlowerDto fDto = new FlowerDto(); fDto.setId(1L);
 
@@ -327,5 +309,10 @@ class BouquetServiceTest {
         BouquetDto result = bouquetService.create(dto);
 
         assertEquals(999999.99, result.getPrice());
+    }
+
+    // Вспомогательный метод для корректности вызова
+    private void bouquetStatusUpdate(Long id, boolean status) {
+        bouquetService.updateStatus(id, status);
     }
 }
