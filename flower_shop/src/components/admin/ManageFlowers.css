@@ -1,3 +1,4 @@
+/* Базовые сбросы для чистоты интерфейса */
 input:focus, select:focus, button:focus, textarea:focus {
     outline: none !important;
     box-shadow: none !important;
@@ -10,61 +11,78 @@ input:focus, select:focus, button:focus, textarea:focus {
     margin: 0 auto;
 }
 
-.operations-grid {
+/* Элегантная плавающая кнопка (FAB) */
+.fab-add-flower {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
     display: flex;
-    justify-content: center;
-    gap: 40px;
-    margin-bottom: 60px;
-    width: 100%;
+    align-items: center;
+    gap: 0;
+    padding: 12px;
+    min-width: 56px;
+    height: 56px;
+    /* Изысканный светлый цвет (слоновая кость / пудра) */
+    background: #fdfaf7;
+    border: 1px solid #e2d1c3;
+    border-radius: 28px;
+    /* Цвет иконки — приглушенный кофейный */
+    color: #8d6e63;
+    cursor: pointer;
+    z-index: 900;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+    /* Мягкая, дорогая тень */
+    box-shadow: 0 10px 30px rgba(141, 110, 99, 0.12);
 }
 
-.op-card {
-    flex: 1;
-    max-width: 450px;
-    height: 45px;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid #efe8e0;
+.fab-plus {
+    font-size: 28px;
+    font-weight: 200;
+    margin-left: 2px;
+    transition: transform 0.4s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    border-radius: 0;
-    overflow: hidden;
 }
 
-.op-card:hover {
-    border-bottom-color: #bcaaa4;
-    transform: translateY(-1px);
-}
-
-.op-card.active {
-    border-bottom: 2px solid #8d6e63;
-    background: transparent;
-}
-
-.add-new-btn {
-    border-bottom-style: dashed;
-}
-
-.op-label {
-    font-size: 11px;
+.fab-text {
+    font-size: 10px;
     text-transform: uppercase;
-    letter-spacing: 3px;
-    color: #8d6e63;
-    font-weight: 300;
+    letter-spacing: 2px;
+    white-space: nowrap;
+    opacity: 0;
+    max-width: 0;
+    transition: all 0.4s ease;
+    color: #5d4037;
 }
 
-.op-indicator {
-    display: none;
+/* Эффект при наведении: кнопка раскрывается и меняет оттенок на чуть более теплый */
+.fab-add-flower:hover {
+    padding: 12px 25px;
+    gap: 12px;
+    transform: translateY(-5px);
+    background: #f4eee8;
+    border-color: #bcaaa4;
+    box-shadow: 0 15px 40px rgba(141, 110, 99, 0.2);
+}
+
+.fab-add-flower:hover .fab-text {
+    opacity: 1;
+    max-width: 200px;
+}
+
+.fab-add-flower:hover .fab-plus {
+    transform: rotate(90deg);
+    margin-left: 0;
 }
 
 .operation-content {
     width: 100%;
+    margin-top: 10px;
 }
 
+/* Сетка галереи */
 .operation-content .flower-grid {
     display: grid !important;
     grid-template-columns: repeat(4, 1fr) !important;
@@ -72,10 +90,11 @@ input:focus, select:focus, button:focus, textarea:focus {
     width: 100% !important;
 }
 
+/* Модальное окно */
 .modal-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(30, 28, 26, 0.45);
+    background: rgba(30, 28, 26, 0.3);
     backdrop-filter: blur(8px);
     display: flex; justify-content: center; align-items: center;
     z-index: 1000;
@@ -88,6 +107,7 @@ input:focus, select:focus, button:focus, textarea:focus {
     max-width: 600px;
     box-shadow: 0 30px 70px rgba(0,0,0,0.1);
     position: relative;
+    border-radius: 2px;
 }
 
 .close-btn {
@@ -102,6 +122,7 @@ input:focus, select:focus, button:focus, textarea:focus {
     line-height: 1;
 }
 
+/* Поля ввода в стиле "Luxury" */
 .input-field-luxury {
     display: flex;
     flex-direction: column;
@@ -130,8 +151,14 @@ input:focus, select:focus, button:focus, textarea:focus {
 
 .status-toggle-wrapper {
     display: flex; align-items: center; gap: 10px; margin-top: 10px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #8d6e63;
+    cursor: pointer;
 }
 
+/* Кнопка в форме */
 .submit-btn-luxury {
     background: none; border: none; font-size: 12px;
     text-transform: uppercase; letter-spacing: 3px;

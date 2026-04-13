@@ -1,37 +1,241 @@
+input:focus, select:focus, button:focus, textarea:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.flowers-admin-panel {
+    padding: 20px;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.fab-add-flower {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 12px;
+    min-width: 56px;
+    height: 56px;
+    background: #fdfaf7;
+    border: 1px solid #e2d1c3;
+    border-radius: 28px;
+    color: #8d6e63;
+    cursor: pointer;
+    z-index: 900;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(141, 110, 99, 0.12);
+}
+
+.fab-plus {
+    font-size: 28px;
+    font-weight: 200;
+    margin-left: 2px;
+    transition: transform 0.4s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fab-text {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    white-space: nowrap;
+    opacity: 0;
+    max-width: 0;
+    transition: all 0.4s ease;
+    color: #5d4037;
+}
+
+.fab-add-flower:hover {
+    padding: 12px 25px;
+    gap: 12px;
+    transform: translateY(-5px);
+    background: #f4eee8;
+    border-color: #bcaaa4;
+    box-shadow: 0 15px 40px rgba(141, 110, 99, 0.2);
+}
+
+.fab-add-flower:hover .fab-text {
+    opacity: 1;
+    max-width: 200px;
+}
+
+.fab-add-flower:hover .fab-plus {
+    transform: rotate(90deg);
+    margin-left: 0;
+}
 
 .operation-content {
     width: 100%;
-    margin-top: 30px;
+    margin-top: 10px;
 }
 
-
-.operation-content .bouquet-grid,
-.operation-content .gallery-container {
+.operation-content .flower-grid {
     display: grid !important;
-
     grid-template-columns: repeat(4, 1fr) !important;
     gap: 25px !important;
     width: 100% !important;
 }
 
-
-@media (max-width: 1200px) {
-    .operation-content .bouquet-grid,
-    .operation-content .gallery-container {
-        grid-template-columns: repeat(3, 1fr) !important;
-    }
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(30, 28, 26, 0.3);
+    backdrop-filter: blur(8px);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 1000;
 }
 
-@media (max-width: 900px) {
-    .operation-content .bouquet-grid,
-    .operation-content .gallery-container {
-        grid-template-columns: repeat(2, 1fr) !important;
-    }
+.modal-content {
+    background: #fff;
+    padding: 50px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 30px 70px rgba(0,0,0,0.1);
+    position: relative;
+    border-radius: 2px;
 }
 
+.close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 32px;
+    cursor: pointer;
+    color: #d7ccc8;
+    line-height: 1;
+}
 
-.flowers-admin-panel {
-    max-width: 1400px !important;
-    margin: 0 auto;
-    padding: 20px;
+.form-title-luxury {
+    font-family: 'Georgia', serif;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #5d4037;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.full-width {
+    grid-column: span 2;
+}
+
+.input-field-luxury {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-bottom: 1px solid #f4f1ee;
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+}
+
+.input-field-luxury label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #bcaaa4;
+}
+
+.input-field-luxury input:not([type="checkbox"]),
+.flower-select-luxury {
+    border: none !important;
+    background: transparent !important;
+    font-family: 'Georgia', serif;
+    font-size: 18px;
+    color: #5d4037;
+    width: 100%;
+}
+
+.selected-flowers-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.flower-tag {
+    background: #fdfaf7;
+    border: 1px solid #e2d1c3;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #8d6e63;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.remove-flower {
+    cursor: pointer;
+    font-size: 16px;
+    color: #d7ccc8;
+    line-height: 1;
+}
+
+.remove-flower:hover {
+    color: #5d4037;
+}
+
+.status-toggle-btn {
+    background: #fdfaf7;
+    border: 1px solid #e2d1c3;
+    color: #8d6e63;
+    padding: 12px 25px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+.status-toggle-btn.archived {
+    background: #fafafa;
+    color: #d7ccc8;
+    border-color: #f4f1ee;
+}
+
+.submit-btn-luxury {
+    background: none;
+    border: none;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    cursor: pointer;
+    position: relative;
+    padding: 15px;
+    color: #8d6e63;
+}
+
+.btn-line {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 1px;
+    background: #bcaaa4;
+    transition: width 0.4s ease;
+}
+
+.submit-btn-luxury:hover .btn-line {
+    width: 100%;
+}
+
+.center-text {
+    text-align: center;
 }

@@ -5,11 +5,10 @@ import './ManageFlowers.css';
 
 const ManageFlowers = () => {
     const [flowers, setFlowers] = useState([]);
-    const [activeOperation, setActiveOperation] = useState('findAll');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingFlower, setEditingFlower] = useState(null);
     const [flowerData, setFlowerData] = useState({
-        name: '', price: '', active: true, pathPhoto: '', color: 'красный'
+        name: '', price: '', active: true, pathPhoto: '', color: 'белый'
     });
 
     const colorOptions = ['белый', 'желтый', 'розовый', 'красный', 'зеленый', 'черный'];
@@ -34,7 +33,7 @@ const ManageFlowers = () => {
 
     const handleAddClick = () => {
         setEditingFlower(null);
-        setFlowerData({ name: '', price: '', active: true, pathPhoto: '', color: 'красный' });
+        setFlowerData({ name: '', price: '', active: true, pathPhoto: '', color: 'белый' });
         setIsModalOpen(true);
     };
 
@@ -68,19 +67,11 @@ const ManageFlowers = () => {
 
     return (
         <div className="flowers-admin-panel">
-            <div className="operations-grid">
-                <div
-                    className={`op-card ${activeOperation === 'findAll' ? 'active' : ''}`}
-                    onClick={() => setActiveOperation('findAll')}
-                >
-                    <span className="op-label">Ассортимент</span>
-                    <div className="op-indicator"></div>
-                </div>
-                <div className="op-card add-new-btn" onClick={handleAddClick}>
-                    <span className="op-label">Создать новый</span>
-                    <div className="op-indicator"></div>
-                </div>
-            </div>
+            {/* Плавающая кнопка (FAB) */}
+            <button className="fab-add-flower" onClick={handleAddClick} title="Добавить новый товар">
+                <span className="fab-plus">+</span>
+                <span className="fab-text">Добавить цветок</span>
+            </button>
 
             <div className="operation-content">
                 <FlowerGallery

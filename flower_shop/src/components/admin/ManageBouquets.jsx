@@ -5,7 +5,6 @@ import './ManageFlowers.css';
 
 const ManageBouquets = () => {
     const [bouquets, setBouquets] = useState([]);
-    const [activeOperation, setActiveOperation] = useState('findAll');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingBouquet, setEditingBouquet] = useState(null);
     const [availableFlowers, setAvailableFlowers] = useState([]);
@@ -48,6 +47,10 @@ const ManageBouquets = () => {
         setIsModalOpen(true);
     };
 
+    const handleAddClick = () => {
+        setEditingBouquet(null);
+        setIsModalOpen(true);
+    };
 
     const handleUpdateSubmit = async (e) => {
         if (e) e.preventDefault();
@@ -57,18 +60,13 @@ const ManageBouquets = () => {
                 price: Number(editingBouquet.price),
                 pathPhoto: editingBouquet.pathPhoto
             };
-
             const response = await api.patch(`/bouquets/${editingBouquet.id}`, updateData);
-
-
             setBouquets(prevBouquets =>
                 prevBouquets.map(b => (b.id === editingBouquet.id ? response.data : b))
             );
-
             closeModal();
         } catch (error) {
             console.error("Ошибка обновления:", error);
-            alert("Не удалось сохранить изменения.");
         }
     };
 
@@ -84,13 +82,10 @@ const ManageBouquets = () => {
                 }))
             };
             const response = await api.post('/bouquets', payload);
-
-
             setBouquets(prevBouquets => [response.data, ...prevBouquets]);
-
             closeModal();
         } catch (err) {
-            alert("Ошибка при создании.");
+            console.error("Ошибка создания:", err);
         }
     };
 
@@ -107,20 +102,12 @@ const ManageBouquets = () => {
 
     return (
         <div className="flowers-admin-panel">
-            <div className="operations-grid">
-                <div className={`op-card ${activeOperation === 'findAll' ? 'active' : ''}`}
-                     onClick={() => setActiveOperation('findAll')}>
-                    <span className="op-label">Ассортимент</span>
-                    <div className="op-indicator"></div>
-                </div>
-                <div className="op-card" onClick={() => { setEditingBouquet(null); setIsModalOpen(true); }}>
-                    <span className="op-label">Создать новый</span>
-                    <div className="op-indicator"></div>
-                </div>
-            </div>
+            <button className="fab-add-flower" onClick={handleAddClick}>
+                <span className="fab-plus">+</span>
+                <span className="fab-text">Создать букет</span>
+            </button>
 
             <div className="operation-content">
-
                 <BouquetGallery bouquets={bouquets} isAdmin={true} onEdit={handleEditClick} />
             </div>
 
@@ -128,7 +115,6 @@ const ManageBouquets = () => {
                 <div className="modal-overlay" onClick={closeModal}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                         <button className="close-btn" onClick={closeModal}>&times;</button>
-
                         <div className="flower-form-clean">
                             {editingBouquet ? (
                                 <div className="edit-mode-container">
@@ -136,7 +122,6 @@ const ManageBouquets = () => {
                                     <p className="edit-subtitle" style={{textAlign:'center', color:'#bcaaa4', fontSize:'10px', letterSpacing:'3px', marginBottom:'20px'}}>
                                         {editingBouquet.name.toUpperCase()}
                                     </p>
-
                                     <div className="form-grid">
                                         <div className="input-field-luxury full-width">
                                             <label>Стоимость (BYN)</label>
@@ -147,7 +132,6 @@ const ManageBouquets = () => {
                                                 onChange={(e) => setEditingBouquet({...editingBouquet, price: e.target.value})}
                                             />
                                         </div>
-
                                         <div className="input-field-luxury full-width">
                                             <label>Путь к фото</label>
                                             <input
@@ -156,7 +140,6 @@ const ManageBouquets = () => {
                                                 onChange={(e) => setEditingBouquet({...editingBouquet, pathPhoto: e.target.value})}
                                             />
                                         </div>
-
                                         <div className="input-field-luxury full-width center-text">
                                             <label style={{marginBottom: '15px', display: 'block'}}>Доступность</label>
                                             <button
@@ -164,27 +147,24 @@ const ManageBouquets = () => {
                                                 className={`status-toggle-btn ${!editingBouquet.active ? 'archived' : ''}`}
                                                 onClick={() => setEditingBouquet({...editingBouquet, active: !editingBouquet.active})}
                                             >
-                                                {editingBouquet.active ? 'АКТИВЕН' : 'СКРЫТ ИЗ КАТАЛОГА'}
+                                                {editingBouquet.active ? 'АКТИВЕН' : 'СКРЫТ'}
                                             </button>
                                         </div>
                                     </div>
-
                                     <div className="center-text" style={{marginTop:'40px'}}>
                                         <button className="submit-btn-luxury" onClick={handleUpdateSubmit}>
-                                            Применить изменения <div className="btn-line"></div>
+                                            Сохранить <div className="btn-line"></div>
                                         </button>
                                     </div>
                                 </div>
                             ) : (
                                 <form onSubmit={handleCreateSubmit}>
-
                                     <h2 className="form-title-luxury">Новая композиция</h2>
                                     <div className="form-grid">
                                         <div className="input-field-luxury full-width">
                                             <label>Название</label>
                                             <input type="text" value={newBouquet.name} onChange={(e) => setNewBouquet({...newBouquet, name: e.target.value})} required />
                                         </div>
-
                                         <div className="input-field-luxury full-width">
                                             <label>Состав</label>
                                             <select
@@ -194,9 +174,7 @@ const ManageBouquets = () => {
                                             >
                                                 <option value="" disabled>Добавить цветок...</option>
                                                 {availableFlowers.map(f => (
-                                                    <option key={f.id} value={f.id}>
-                                                        {f.name} ({f.color})
-                                                    </option>
+                                                    <option key={f.id} value={f.id}>{f.name} ({f.color})</option>
                                                 ))}
                                             </select>
                                             <div className="selected-flowers-list">
@@ -208,16 +186,10 @@ const ManageBouquets = () => {
                                                 ))}
                                             </div>
                                         </div>
-
                                         <div className="input-field-luxury full-width">
                                             <label>URL фотографии</label>
-                                            <input
-                                                type="text"
-                                                value={newBouquet.pathPhoto}
-                                                onChange={(e) => setNewBouquet({...newBouquet, pathPhoto: e.target.value})}
-                                            />
+                                            <input type="text" value={newBouquet.pathPhoto} onChange={(e) => setNewBouquet({...newBouquet, pathPhoto: e.target.value})} />
                                         </div>
-
                                         <div className="input-field-luxury">
                                             <label>Цена (BYN)</label>
                                             <input type="number" step="0.01" value={newBouquet.price} onChange={(e) => setNewBouquet({...newBouquet, price: e.target.value})} required />
@@ -227,9 +199,8 @@ const ManageBouquets = () => {
                                             <input type="number" value={newBouquet.countFlowers} onChange={(e) => setNewBouquet({...newBouquet, countFlowers: e.target.value})} required />
                                         </div>
                                     </div>
-
                                     <div className="center-text" style={{marginTop:'30px'}}>
-                                        <button type="submit" className="submit-btn-luxury">Сохранить букет</button>
+                                        <button type="submit" className="submit-btn-luxury">Создать букет <div className="btn-line"></div></button>
                                     </div>
                                 </form>
                             )}
